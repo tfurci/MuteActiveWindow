@@ -12,6 +12,7 @@
 - [Running the Script at Startup](#running-the-script-at-startup)
   - [Automatic Startup](#automatic-startup)
   - [Manual Startup](#manual-startup)
+- [Updating](#updating-your-script-and-pairs)
 - [Customization](#customization)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
@@ -60,6 +61,12 @@ Now, the script will run automatically each time you start Windows without the n
 
 Now, the script will run automatically each time you start Windows.
 
+## Updating Your Script and Pairs
+
+To update your MuteActiveWindow script or custom executable pairs, use the following batch files located in the script folder:
+
+- `UpdateScript.bat`: Updates the main script.
+- `UpdatePairs.bat`: Updates the custom executable pairs.
 
 ## Customization
 
