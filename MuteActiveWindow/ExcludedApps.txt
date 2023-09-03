@@ -1,0 +1,1 @@
+discord.exe;test2.exe;test3.exe;
