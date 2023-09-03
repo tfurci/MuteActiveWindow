@@ -47,7 +47,7 @@ To mute the active window, use the predefined hotkey (you can customize it in th
 
 ## Customize Hotkey
 
-Change the hotkey by editing the "Hotkey.txt" file (located in the same directory as the script) and replacing its contents with your desired hotkey (e.g., "F10").
+Change the hotkey by editing the "Hotkey.txt" file (located in the same Config directory) and replacing its contents with your desired hotkey (e.g., "F10").
 
 ## Running the Script at Startup
 
