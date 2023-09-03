@@ -15,7 +15,7 @@ GetActiveWindowExe() {
 }
 
 ; Define a hotkey (F1) to toggle mute/unmute the active window
-F16:: 
+F1:: 
     exeName := GetActiveWindowExe()
     if (exeName) {
         if (muted) {
