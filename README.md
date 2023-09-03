@@ -58,9 +58,11 @@ You can configure the script to exclude specific applications from being muted. 
 
 2. Add the names of the applications you want to exclude, all on the same line, separated by a semicolon `;`, in the following format:
 
-app1.exe;app2.exe
+3. Also dont forget to add `;` at the end of list or apps wont get excluded.
 
-Replace `app1.exe` and `app2.exe` with the actual names of the executable files you want to exclude.
+app1.exe;app2.exe;app3.exe;
+
+Replace `app1.exe`, `app2.exe` or `app3.exe` with the actual names of the executable files you want to exclude.
 
 3. Save the `ExcludedApps.txt` file.
 
@@ -72,7 +74,7 @@ Now, the specified applications will be excluded from the script's muting behavi
 
 Suppose you want to exclude Spotify (`Spotify.exe`) and Brave (`Brave.exe`) from being muted. Your `ExcludedApps.txt` file would look like this:
 
-Spotify.exe;Brave.exe
+Spotify.exe;Brave.exe;
 
 This will ensure that the script doesn't mute Spotify and Brave when the hotkey is pressed.
 
