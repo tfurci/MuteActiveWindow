@@ -32,6 +32,12 @@ You can choose to run the script at startup either automatically or manually.
 
 ### Automatic Startup
 
+1. Run `AutoEnableStartup.bat` located in the script directory. This batch file will automatically move the required files to the Startup folder for you.
+
+Now, the script will run automatically each time you start Windows without the need for manual intervention.
+
+### Manual Startup
+
 1. Press `Win + R` to open the Run dialog.
 
 2. Type `shell:startup` and press Enter. This will open the Startup folder for the current user.
@@ -40,13 +46,15 @@ You can choose to run the script at startup either automatically or manually.
 
 Now, the script will run automatically each time you start Windows.
 
-### Manual Startup
-
-To manually start the script when needed, simply double-click the `MuteActiveWindow.ahk` script file.
 
 ## Customization
 
-You can customize the script by editing the AutoHotkey script file (`MuteActiveWindow.ahk`). You can change the hotkey, adjust settings, or modify the behavior as needed.
+You can customize the script, including the hotkey, by editing the AutoHotkey script file (`MuteActiveWindow.ahk`). To change the hotkey, locate the following line in the script:
+
+Line 18:
+- F1::
+
+Replace `F1` with your desired hotkey. You can refer to AutoHotkey's [documentation on hotkeys](https://www.autohotkey.com/docs/Hotkeys.htm) for more information on specifying hotkeys.
 
 ## License
 
