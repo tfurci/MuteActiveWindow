@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 :: Specify the URL of the raw script on GitHub
-set "githubRawURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/CustomPairs.txt"
+set "githubRawURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/Config/CustomPairs.txt"
 
 :: Specify the root directory where the script is currently located
 set "scriptDirectory=%~dp0"
