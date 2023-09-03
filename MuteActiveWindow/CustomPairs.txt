@@ -1,0 +1,5 @@
+ApplicationFrameHost.exe|XboxPcApp.exe,
+app2.exe|target2.exe,
+app3.exe|target3.exe,
+app4.exe|target4.exe,
+app5.exe|target5.exe,

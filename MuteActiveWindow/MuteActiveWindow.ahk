@@ -11,21 +11,25 @@ GetActiveWindowExe() {
     return processName
 }
 
-; Custom exe mute pointers to fix some apps, dont forget to use , in the end
-; Also make sure to uncomment customExePairs lines that you want to use
+; Construct the full path to the CustomPairs.txt file
+CustomPairsFile := ScriptDir . "\CustomPairs.txt"
 
-customExePairs := "ApplicationFrameHost.exe|XboxPcApp.exe,"
-;customExePairs .= "app2.exe|target2.exe,"
-;customExePairs .= "app3.exe|target3.exe,"
-;customExePairs .= "app4.exe|target4.exe,"
-;customExePairs .= "app5.exe|target5.exe,"
+; Check if the CustomPairs.txt file exists
+if !FileExist(CustomPairsFile) {
+    MsgBox CustomPairs.txt not found in the script directory.
+    ExitApp
+}
+
+; Read custom exe pairs from the text file
+FileRead, customExePairs, %CustomPairsFile%
 
 
 ; Define a hotkey (F1) to toggle mute/unmute the active window
 F1:: 
     exeName := GetActiveWindowExe()
     
-    ; Split the customExePairs into an array of pairs based on the comma delimiter
+	
+    ; Split the customExePairs into an array of pairs based on line breaks
     customPairs := StrSplit(customExePairs, ",")
     
     ; Iterate through the array and mute the target executable if the display executable matches
