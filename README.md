@@ -6,21 +6,31 @@
 
 Before using this script, make sure you have the required tools and files in place.
 
+### Required Tools
+
+- [AutoHotkey](https://www.autohotkey.com/): If not already installed, download and install AutoHotkey to run the script.
+
+### Additional File
+
+- Download the `svcl.exe` tool from [here](https://www.nirsoft.net/utils/sound_volume_command_line.html) and place it in the same directory as the AutoHotkey script (`MuteActiveWindow.ahk`).
+
 ## Installation
 
 Follow these steps to set up the script:
 
 1. Clone or download this repository to your computer.
 
-2. Download the `svcl.exe` tool from [here](https://www.nirsoft.net/utils/sound_volume_command_line.html) and place it in the same directory as the AutoHotkey script (`MuteActiveWindow.ahk`).
+2. Place the `svcl.exe` tool in the same directory as the AutoHotkey script (`MuteActiveWindow.ahk`).
 
 ## Usage
 
 To mute the active window, use the predefined hotkey (you can customize it in the script). When you press the hotkey, the active window's audio will be muted.
 
-## Auto-Start with Windows
+## Running the Script at Startup
 
-To have the script automatically start with Windows, you can add it to the Windows startup folder:
+You can choose to run the script at startup either automatically or manually.
+
+### Automatic Startup
 
 1. Press `Win + R` to open the Run dialog.
 
@@ -29,6 +39,10 @@ To have the script automatically start with Windows, you can add it to the Windo
 3. Create a shortcut to the `MuteActiveWindow.ahk` script in this folder. You can do this by right-clicking the script file and selecting "Create shortcut," then move the shortcut to the Startup folder.
 
 Now, the script will run automatically each time you start Windows.
+
+### Manual Startup
+
+To manually start the script when needed, simply double-click the `MuteActiveWindow.ahk` script file.
 
 ## Customization
 
