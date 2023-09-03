@@ -2,6 +2,20 @@
 
 **MuteActiveWindow** is an AutoHotkey script that allows you to mute the currently active window using a custom hotkey.
 
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+  - [Required Tools](#required-tools)
+  - [Additional File (Included in .rar release)](#additional-file-included-in-rar-release)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Running the Script at Startup](#running-the-script-at-startup)
+  - [Automatic Startup](#automatic-startup)
+  - [Manual Startup](#manual-startup)
+- [Customization](#customization)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+
 ## Prerequisites
 
 Before using this script, make sure you have the required tools and files in place.
