@@ -1,7 +1,7 @@
 @echo off
 
 :: Define the source and destination paths
-set "ScriptDir=%~dp0"
+set "ScriptDir=%~dp0..\"    :: Navigate up one directory
 set "ScriptName=MuteActiveWindow.ahk"
 set "ShortcutName=MuteActiveWindow.lnk"
 set "StartupFolder=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
