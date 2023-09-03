@@ -13,11 +13,11 @@ This script was originally based on [kristoffer-tvera/mute-current-application](
   - [Additional File (Included in .rar release)](#additional-file-included-in-rar-release)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Customize Hotkey](#customize-hotkey)
 - [Running the Script at Startup](#running-the-script-at-startup)
   - [Automatic Startup](#automatic-startup)
   - [Manual Startup](#manual-startup)
 - [Updating](#updating-your-script-and-pairs)
-- [Customize Hotkey](#customize-hotkey)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 
@@ -45,6 +45,10 @@ Follow these steps to set up the script:
 
 To mute the active window, use the predefined hotkey (you can customize it in the script). When you press the hotkey, the active window's audio will be muted.
 
+## Customize Hotkey
+
+Change the hotkey by editing the "Hotkey.txt" file (located in the same directory as the script) and replacing its contents with your desired hotkey (e.g., "F10").
+
 ## Running the Script at Startup
 
 You can choose to run the script at startup either automatically or manually.
@@ -71,10 +75,6 @@ To update your MuteActiveWindow script or custom executable pairs, use the follo
 
 - `UpdateScript.bat`: Updates the main script.
 - `UpdatePairs.bat`: Updates the custom executable pairs.
-
-## Customize Hotkey
-
-Change the hotkey by editing the "Hotkey.txt" file (located in the same directory as the script) and replacing its contents with your desired hotkey (e.g., "F10").
 
 ## License
 
