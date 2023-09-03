@@ -4,14 +4,17 @@ setlocal enabledelayedexpansion
 :: Specify the URL of the raw script on GitHub
 set "githubRawURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/CustomPairs.txt"
 
-:: Specify the new local directory where the script should be saved
-set "localDirectory=%~dp0..\"
+:: Specify the root directory where the script is currently located
+set "scriptDirectory=%~dp0"
+
+:: Specify the "Config" directory relative to the script directory
+set "configDirectory=%scriptDirectory%..\Config"
 
 :: Specify the full path to the local script file
-set "localFilePath=%localDirectory%CustomPairs.txt"
+set "localFilePath=%configDirectory%\CustomPairs.txt"
 
-:: Ensure that the local directory exists
-md "%localDirectory%" 2>nul
+:: Ensure that the local directory exists (Config folder)
+md "%configDirectory%" 2>nul
 
 :: Download the script from GitHub
 curl -k -o "%localFilePath%.temp" "%githubRawURL%"

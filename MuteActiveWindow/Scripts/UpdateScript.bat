@@ -4,14 +4,17 @@ setlocal enabledelayedexpansion
 :: Specify the URL of the raw script on GitHub
 set "githubRawURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/MuteActiveWindow.ahk"
 
-:: Specify the new local directory where the script should be saved
-set "localDirectory=%~dp0..\"
+:: Specify the root directory where the script is currently located
+set "scriptDirectory=%~dp0"
+
+:: Specify the "Scripts" directory relative to the script directory
+set "scriptsDirectory=%scriptDirectory%.."
 
 :: Specify the full path to the local script file
-set "localFilePath=%localDirectory%MuteActiveWindow.ahk"
+set "localFilePath=%scriptsDirectory%\MuteActiveWindow.ahk"
 
 :: Ensure that the local directory exists
-md "%localDirectory%" 2>nul
+md "%scriptsDirectory%" 2>nul
 
 :: Download the script from GitHub
 curl -k -o "%localFilePath%.temp" "%githubRawURL%"
