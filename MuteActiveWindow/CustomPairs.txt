@@ -1,4 +1,1 @@
-ApplicationFrameHost.exe|XboxPcApp.exe,
-app2.exe|target2.exe,
-app3.exe|target3.exe,
-app4.exe|target4.exe,
+ApplicationFrameHost.exe|XboxPcApp.exe;test1.exe|test2.exe;

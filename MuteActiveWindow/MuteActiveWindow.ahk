@@ -23,27 +23,34 @@ if !FileExist(CustomPairsFile) {
 ; Define a variable to store the hotkey
 Hotkey := ""
 
-; Read the hotkey from the external file "Hotkey.txt"
-HotkeyFile := ScriptDir . "\Hotkey.txt"
-FileReadLine, Hotkey, %HotkeyFile%, 1 ; Read the first line
+; Check if the script is running for the first time
+if (A_PriorHotkey = "") {
+    ; Read the hotkey from the external file "Hotkey.txt"
+    HotkeyFile := ScriptDir . "\Hotkey.txt"
+    FileReadLine, Hotkey, %HotkeyFile%, 1 ; Read the first line
 
-; Define a hotkey dynamically based on the value read from "Hotkey.txt"
-if (Hotkey != "") {
-    HotkeyName := Hotkey
-    Hotkey, %HotkeyName%, ToggleHotkey
+    ; Define a hotkey dynamically based on the value read from "Hotkey.txt"
+    if (Hotkey != "") {
+        HotkeyName := Hotkey
+        Hotkey, %HotkeyName%, RunMute ; Call RunMute when hotkey is pressed
+    }
 }
 
-ToggleHotkey:
+; Rename ToggleHotkey to RunMute
+RunMute:
     ; Check if the hotkey is being pressed
     if GetKeyState(HotkeyName, "P") {
         exeName := GetActiveWindowExe()
         
-        ; Split the customExePairs into an array of pairs based on line breaks
-        customPairs := StrSplit(customExePairs, ",")
+        ; Read the content of CustomPairs.txt into a variable
+        FileRead, customExePairs, %CustomPairsFile%
+        
+        ; Split the customExePairs into an array of pairs based on semicolon delimiter
+        customPairs := StrSplit(customExePairs, ";")
         
         ; Iterate through the array and mute the target executable if the display executable matches
         Loop, % customPairs.Length() {
-            pair := customExePairs[A_Index]
+            pair := customPairs[A_Index]
             parts := StrSplit(pair, "|")
             displayExe := parts[1]
             targetExe := parts[2]
@@ -61,3 +68,9 @@ ToggleHotkey:
         }
     }
 return
+
+; Check if the hotkey is being pressed
+if GetKeyState(HotkeyName, "P") {
+    ; Call the RunMute label to handle muting when the hotkey is pressed
+    GoSub, RunMute
+}
