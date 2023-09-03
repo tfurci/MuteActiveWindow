@@ -1,6 +1,6 @@
 # MuteActiveWindow
 
-**MuteActiveWindow** is an AutoHotkey script that allows you to mute the currently active window using a custom hotkey.
+**MuteActiveWindow** is an AutoHotkey script that allows you to mute the currently active window using a custom hotkey. This script was originally based on [kristoffer-tvera/mute-current-application](https://github.com/kristoffer-tvera/mute-current-application) but was rewritten because the previous version didnt work fir me with the majority of UWP and some other apps.
 
 ## Table of Contents
 
@@ -65,7 +65,7 @@ Now, the script will run automatically each time you start Windows.
 
 You can customize the script, including the hotkey, by editing the AutoHotkey script file (`MuteActiveWindow.ahk`). To change the hotkey, locate the following line in the script:
 
-Line 18:
+[Line 18:](https://github.com/tfurci/MuteActiveWindow/blob/46dbec4f9d1ec6ccf8ee64366a5e2a258730c1fb/MuteActiveWindow.ahk#L18)
 - F1::
 
 Replace `F1` with your desired hotkey. You can refer to AutoHotkey's [documentation on hotkeys](https://www.autohotkey.com/docs/Hotkeys.htm) for more information on specifying hotkeys.
