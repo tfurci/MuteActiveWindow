@@ -23,39 +23,20 @@ if !FileExist(CustomPairsFile) {
     ExitApp
 }
 
-; Read custom exe pairs from the text file
-FileRead, customExePairs, %CustomPairsFile%
+; Define a variable to store the hotkey
+Hotkey := ""
 
+; Check if the script is running for the first time
+if (A_PriorHotkey = "") {
+    ; Read the hotkey from the external file "Hotkey.txt"
+    HotkeyFile := ScriptDir . "\Hotkey.txt"
+    FileReadLine, Hotkey, %HotkeyFile%, 1 ; Read the first line
 
-; Define a hotkey (F1) to toggle mute/unmute the active window
-F1:: 
-    exeName := GetActiveWindowExe()
-    
-	
-    ; Split the customExePairs into an array of pairs based on line breaks
-    customPairs := StrSplit(customExePairs, ",")
-    
-    ; Iterate through the array and mute the target executable if the display executable matches
-    Loop, % customPairs.Length() {
-        pair := customPairs[A_Index]
-        parts := StrSplit(pair, "|")
-        displayExe := parts[1]
-        targetExe := parts[2]
-        
-        if (exeName = displayExe) {
-            ; Use the "Switch" command with svcl.exe to mute the specified target executable
-            RunWait, %ScriptDir%\svcl.exe /Switch "%targetExe%", , Hide
-            return ; Exit the loop after muting one target executable
-        }
+    ; Define a hotkey dynamically based on the value read from "Hotkey.txt"
+    if (Hotkey != "") {
+        HotkeyName := Hotkey
+        Hotkey, %HotkeyName%, RunMute ; Call RunMute when hotkey is pressed
     }
-<<<<<<< Updated upstream
-    
-    ; If no custom match was found, mute/unmute the active window's .exe
-    if (exeName) {
-        RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%", , Hide
-    }
-return
-=======
 }
 
 ; Rename ToggleHotkey to RunMute
@@ -122,4 +103,3 @@ if GetKeyState(HotkeyName, "P") {
     ; Call the RunMute label to handle muting when the hotkey is pressed
     GoSub, RunMute
 }
->>>>>>> Stashed changes
