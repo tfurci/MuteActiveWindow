@@ -1,6 +1,10 @@
 # MuteActiveWindow
 
-**MuteActiveWindow** is an AutoHotkey script that allows you to mute the currently active window using a custom hotkey. This script was originally based on [kristoffer-tvera/mute-current-application](https://github.com/kristoffer-tvera/mute-current-application) but was rewritten because the previous version didnt work fir me with the majority of UWP and some other apps.
+**MuteActiveWindow** is an AutoHotkey script that allows you to mute the currently active window using a custom hotkey. **F1 by default!**
+
+---
+
+This script was originally based on [kristoffer-tvera/mute-current-application](https://github.com/kristoffer-tvera/mute-current-application) but was rewritten because the previous version didn't work for me with the majority of UWP and some other apps.
 
 ## Table of Contents
 
@@ -9,10 +13,11 @@
   - [Additional File (Included in .rar release)](#additional-file-included-in-rar-release)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Customize Hotkey](#customize-hotkey)
 - [Running the Script at Startup](#running-the-script-at-startup)
   - [Automatic Startup](#automatic-startup)
   - [Manual Startup](#manual-startup)
-- [Customization](#customization)
+- [Updating](#updating-your-script-and-pairs)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 
@@ -40,6 +45,10 @@ Follow these steps to set up the script:
 
 To mute the active window, use the predefined hotkey (you can customize it in the script). When you press the hotkey, the active window's audio will be muted.
 
+## Customize Hotkey
+
+Change the hotkey by editing the "Hotkey.txt" file (located in the same directory as the script) and replacing its contents with your desired hotkey (e.g., "F10").
+
 ## Running the Script at Startup
 
 You can choose to run the script at startup either automatically or manually.
@@ -60,15 +69,12 @@ Now, the script will run automatically each time you start Windows without the n
 
 Now, the script will run automatically each time you start Windows.
 
+## Updating Your Script and Pairs
 
-## Customization
+To update your MuteActiveWindow script or custom executable pairs, use the following batch files located in the script folder:
 
-You can customize the script, including the hotkey, by editing the AutoHotkey script file (`MuteActiveWindow.ahk`). To change the hotkey, locate the following line in the script:
-
-[Line 18:](https://github.com/tfurci/MuteActiveWindow/blob/46dbec4f9d1ec6ccf8ee64366a5e2a258730c1fb/MuteActiveWindow.ahk#L18)
-- F1::
-
-Replace `F1` with your desired hotkey. You can refer to AutoHotkey's [documentation on hotkeys](https://www.autohotkey.com/docs/Hotkeys.htm) for more information on specifying hotkeys.
+- `UpdateScript.bat`: Updates the main script.
+- `UpdatePairs.bat`: Updates the custom executable pairs.
 
 ## License
 
