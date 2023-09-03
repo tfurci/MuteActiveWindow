@@ -7,6 +7,9 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
+; Define a variable to control debugging messages
+EnableDebug := true ; Set this to false to disable debugging messages
+
 ; Function to get the active window's .exe file name
 GetActiveWindowExe() {
     WinGetActiveTitle, title
@@ -14,17 +17,8 @@ GetActiveWindowExe() {
     return processName
 }
 
-; Construct the full path to the CustomPairs.txt file in the Config folder
-CustomPairsFile := ConfigDir . "\CustomPairs.txt"
-
 ; Construct the full path to the ExcludedApps.txt file in the Config folder
 ExcludedAppsFile := ConfigDir . "\ExcludedApps.txt"
-
-; Check if the CustomPairs.txt file exists
-if !FileExist(CustomPairsFile) {
-    MsgBox CustomPairs.txt not found in the Config folder.
-    ExitApp
-}
 
 ; Define a variable to store the hotkey
 Hotkey := ""
@@ -46,63 +40,48 @@ if (A_PriorHotkey = "") {
 RunMute:
     ; Check if the hotkey is being pressed
     if GetKeyState(HotkeyName, "P") {
-        exeName := GetActiveWindowExe()
-        
-        ; Read the content of CustomPairs.txt into a variable
-        FileRead, customExePairs, %CustomPairsFile%
-        
-        ; Split the customExePairs into an array of pairs based on semicolon delimiter
-        customPairs := StrSplit(customExePairs, ";")
-        
-        ; Iterate through the array and mute the target executable if the display executable matches
-        Loop, % customPairs.Length() {
-            pair := customPairs[A_Index]
-            parts := StrSplit(pair, "|")
-            displayExe := parts[1]
-            targetExe := parts[2]
-            
-            if (exeName = displayExe) {
-                ; Check if the executable is not in the exclusion list
-                if (!IsExcluded(exeName, ExcludedAppsFile)) {
-                    ; Use the "Switch" command with svcl.exe to mute the specified target executable
-                    RunWait, %ScriptDir%\svcl.exe /Switch "%targetExe%", , Hide
-                    return ; Exit the loop after muting one target executable
-                }
+        ; Get the process name (EXE) of the active window
+        WinGet, processName, ProcessName, A
+
+        ; Check if the active window's process is ApplicationFrameHost.exe
+        if (processName = "ApplicationFrameHost.exe") {
+            ; Get the title of the active window (topbar text)
+            WinGetActiveTitle, title
+
+            ; Check if the title or exe is excluded, and skip muting if it is
+            if (!IsExcluded(title, ExcludedAppsFile) && !IsExcluded(processName, ExcludedAppsFile)) {
+                ; Run the svcl.exe command to mute/unmute the application without waiting
+                RunWait, svcl.exe /Switch "%title%", , Hide, output  ; Capture the output
             }
-        }
-        
-        ; If no custom match was found, mute/unmute the active window's .exe
-        if (exeName && !IsExcluded(exeName, ExcludedAppsFile)) {
-            RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%", , Hide
+        } else {
+            ; Get the .exe name of the active window
+            exeName := GetActiveWindowExe()
+
+            ; Check if the title or exe is excluded, and skip muting if it is
+            if (!IsExcluded(exeName, ExcludedAppsFile) && !IsExcluded(processName, ExcludedAppsFile)) {
+                ; Run the svcl.exe command to mute/unmute the active window's .exe
+                RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%", , Hide, output  ; Capture the output
+            }
         }
     }
 return
 
-; Function to check if an executable is in the exclusion list
-IsExcluded(exeName, exclusionFile) {
+; Function to check if a title or exe is in the exclusion list
+IsExcluded(name, exclusionFile) {
     ; Read the exclusion list from the specified file in the Config folder
     FileRead, excludedApps, %exclusionFile%
     
-    ; Split the exclusion list into an array of excluded executables
-    excludedList := StrSplit(excludedApps, ";")
+    ; Split the exclusion list into an array of excluded items using line breaks
+    excludedList := StrSplit(excludedApps, "`r`n") ; Use "`r`n" for Windows line breaks
     
-    ; Iterate through the list and check if exeName is in the exclusion list
+    ; Iterate through the list and check if the name is in the exclusion list
     Loop, % excludedList.Length() {
-        excludedPair := excludedList[A_Index]
-        parts := StrSplit(excludedPair, "|")
-        excludedDisplayExe := parts[1]
-        excludedTargetExe := parts[2]
+        excludedName := Trim(excludedList[A_Index])
         
-        if (exeName = excludedDisplayExe) {
+        if (name = excludedName) {
             return true
         }
     }
     
     return false
-}
-
-; Check if the hotkey is being pressed
-if GetKeyState(HotkeyName, "P") {
-    ; Call the RunMute label to handle muting when the hotkey is pressed
-    GoSub, RunMute
 }

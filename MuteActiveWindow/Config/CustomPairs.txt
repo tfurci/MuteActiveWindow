@@ -1,1 +1,0 @@
-ApplicationFrameHost.exe|XboxPcApp.exe;test1.exe|test2.exe;
