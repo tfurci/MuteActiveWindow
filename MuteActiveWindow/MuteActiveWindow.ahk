@@ -23,12 +23,17 @@ if !FileExist(CustomPairsFile) {
 ; Read custom exe pairs from the text file
 FileRead, customExePairs, %CustomPairsFile%
 
+; Read the hotkey from the external file "Hotkey.txt"
+HotkeyFile := ScriptDir . "\Hotkey.txt"
+FileReadLine, Hotkey, %HotkeyFile%, 1 ; Read the first line
 
-; Define a hotkey (F1) to toggle mute/unmute the active window
-F1:: 
+; Define a hotkey dynamically based on the value read from "Hotkey.txt"
+HotkeyName := Hotkey
+Hotkey, %HotkeyName%, ToggleHotkey
+
+ToggleHotkey:
     exeName := GetActiveWindowExe()
     
-	
     ; Split the customExePairs into an array of pairs based on line breaks
     customPairs := StrSplit(customExePairs, ",")
     
