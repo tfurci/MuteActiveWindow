@@ -50,7 +50,7 @@ You can customize the script by editing the AutoHotkey script file (`MuteActiveW
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [GNU General Public License version 3 (GPL-3.0)](LICENSE).
 
 ## Acknowledgments
 
