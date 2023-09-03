@@ -1,6 +1,6 @@
 # MuteActiveWindow
 
-**MuteActiveWindow** is an AutoHotkey script that allows you to mute the currently active window using a custom hotkey. F1 by default!
+**MuteActiveWindow** is an AutoHotkey script that allows you to mute the currently active window using a custom hotkey. **F1 by default!**
 
 ---
 
