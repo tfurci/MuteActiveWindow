@@ -56,13 +56,19 @@ You can configure the script to exclude specific applications from being muted. 
 
 1. Open the `ExcludedApps.txt` file located in the "Config" folder.
 
-2. Add the names of the applications you want to exclude, all on the same line, separated by a semicolon `;`, in the following format:
+2. Add the names of the applications you want to exclude, each on a separate line, in the following format:
 
-3. Also dont forget to add `;` at the end of list or apps wont get excluded.
+   - For executable files (e.g., Brave.exe):
+     ```
+     Brave.exe
+     ```
 
-app1.exe;app2.exe;app3.exe;
+   - For UWP (Universal Windows Platform) apps (e.g., Xbox):
+     ```
+     Xbox
+     ```
 
-Replace `app1.exe`, `app2.exe` or `app3.exe` with the actual names of the executable files you want to exclude.
+     You can mix both executable files and UWP apps on separate lines as needed.
 
 3. Save the `ExcludedApps.txt` file.
 
@@ -70,13 +76,15 @@ Replace `app1.exe`, `app2.exe` or `app3.exe` with the actual names of the execut
 
 Now, the specified applications will be excluded from the script's muting behavior.
 
-**Example:**
+**Examples:**
 
-Suppose you want to exclude Spotify (`Spotify.exe`) and Brave (`Brave.exe`) from being muted. Your `ExcludedApps.txt` file would look like this:
+Suppose you want to exclude Brave (`Brave.exe`) and Xbox (`Xbox`) from being muted. Your `ExcludedApps.txt` file would look like this:
 
-Spotify.exe;Brave.exe;
-
-This will ensure that the script doesn't mute Spotify and Brave when the hotkey is pressed.
+```
+Brave.exe
+Xbox
+```
+This will ensure that the script doesn't mute Brave.exe, Discord.exe, and Xbox when the hotkey is pressed.
 
 ## Running the Script at Startup
 
