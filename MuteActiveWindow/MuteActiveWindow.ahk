@@ -4,6 +4,9 @@ SetTitleMatchMode, 2
 ; Get the directory of the AutoHotkey script
 ScriptDir := A_ScriptDir
 
+; Specify the directory for configuration files
+ConfigDir := ScriptDir . "\Config"
+
 ; Function to get the active window's .exe file name
 GetActiveWindowExe() {
     WinGetActiveTitle, title
@@ -11,15 +14,15 @@ GetActiveWindowExe() {
     return processName
 }
 
-; Construct the full path to the CustomPairs.txt file
-CustomPairsFile := ScriptDir . "\CustomPairs.txt"
+; Construct the full path to the CustomPairs.txt file in the Config folder
+CustomPairsFile := ConfigDir . "\CustomPairs.txt"
 
-; Construct the full path to the ExcludedApps.txt file
-ExcludedAppsFile := ScriptDir . "\ExcludedApps.txt"
+; Construct the full path to the ExcludedApps.txt file in the Config folder
+ExcludedAppsFile := ConfigDir . "\ExcludedApps.txt"
 
 ; Check if the CustomPairs.txt file exists
 if !FileExist(CustomPairsFile) {
-    MsgBox CustomPairs.txt not found in the script directory.
+    MsgBox CustomPairs.txt not found in the Config folder.
     ExitApp
 }
 
@@ -28,14 +31,14 @@ Hotkey := ""
 
 ; Check if the script is running for the first time
 if (A_PriorHotkey = "") {
-    ; Read the hotkey from the external file "Hotkey.txt"
-    HotkeyFile := ScriptDir . "\Hotkey.txt"
+    ; Read the hotkey from the external file "Hotkey.txt" in the Config folder
+    HotkeyFile := ConfigDir . "\Hotkey.txt"
     FileReadLine, Hotkey, %HotkeyFile%, 1 ; Read the first line
 
     ; Define a hotkey dynamically based on the value read from "Hotkey.txt"
     if (Hotkey != "") {
         HotkeyName := Hotkey
-        Hotkey, %HotkeyName%, RunMute ; Call RunMute when hotkey is pressed
+        Hotkey, %HotkeyName%, RunMute ; Call RunMute when the hotkey is pressed
     }
 }
 
@@ -77,7 +80,7 @@ return
 
 ; Function to check if an executable is in the exclusion list
 IsExcluded(exeName, exclusionFile) {
-    ; Read the exclusion list from the specified file
+    ; Read the exclusion list from the specified file in the Config folder
     FileRead, excludedApps, %exclusionFile%
     
     ; Split the exclusion list into an array of excluded executables
