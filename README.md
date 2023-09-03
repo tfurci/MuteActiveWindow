@@ -10,7 +10,7 @@ Before using this script, make sure you have the required tools and files in pla
 
 - [AutoHotkey](https://www.autohotkey.com/): If not already installed, download and install AutoHotkey to run the script.
 
-### Additional File
+### Additional File (Included in .rar release)
 
 - Download the `svcl.exe` tool from [here](https://www.nirsoft.net/utils/sound_volume_command_line.html) or [direct link](https://www.nirsoft.net/utils/svcl-x64.zip) and place it in the same directory as the AutoHotkey script (`MuteActiveWindow.ahk`).
 
