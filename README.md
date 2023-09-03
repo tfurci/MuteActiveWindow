@@ -20,7 +20,7 @@ Follow these steps to set up the script:
 
 1. Clone or download this repository to your computer.
 
-2. Place the `svcl.exe` tool in the same directory as the AutoHotkey script (`MuteActiveWindow.ahk`).
+2. If there is no svcl in directory place the `svcl.exe` tool in the same directory as the AutoHotkey script (`MuteActiveWindow.ahk`).
 
 ## Usage
 
