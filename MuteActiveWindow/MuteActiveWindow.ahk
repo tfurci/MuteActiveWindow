@@ -7,6 +7,9 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
+global ScriptVersion := "5.0.0"
+
+
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
 
@@ -15,6 +18,15 @@ AddCustomMenus() ; Add custom menu options on script startup
 
 ; Set the custom tray icon if it exists
 SetCustomIcon()
+
+; Check for auto-updates with AutoUpdateCheck.txt file
+CheckForUpdatesFile := ConfigDir . "\AutoUpdateCheck.txt"
+FileReadLine, AutoUpdateEnabled, %CheckForUpdatesFile%, 1
+
+if (AutoUpdateEnabled = "1") {
+    ; Run auto-update check if enabled
+    CheckForUpdates()
+}
 
 ; Function to get the active window's .exe file name
 GetActiveWindowExe() {
@@ -27,7 +39,7 @@ GetActiveWindowExe() {
 ExcludedAppsFile := ConfigDir . "\ExcludedApps.txt"
 
 ; Define a variable to store the hotkey
-Hotkey := "^!p" ; Right Ctrl + Left Alt + P
+Hotkey := ""
 
 ; Check if the script is running for the first time
 if (A_PriorHotkey = "") {
@@ -108,25 +120,69 @@ return
 ; Function to add custom menu items to the tray menu
 AddCustomMenus() {
     Menu, Tray, Add, , ; This empty item adds a separator
-    Menu, Tray, Add, Update Script, UpdateScript
+    Menu, Tray, Add, Update Script, CheckForUpdates
     Menu, Tray, Add, Version, DisplayVersion
-}
-
-; Function to update the script
-UpdateScript() {
-    ; Define the path to the UpdateScript.bat file using A_ScriptDir
-    UpdateScriptBat := A_ScriptDir . "\Scripts\UpdateScript.bat"
-    
-    ; Check if the batch file exists
-    if (FileExist(UpdateScriptBat)) {
-        ; Run the batch file
-        Run, %UpdateScriptBat%
-    } else {
-        MsgBox, Updater: %UpdateScriptBat%
-    }
 }
 
 ; Function to display the version information
 DisplayVersion() {
-    MsgBox, MuteActiveWindow`nVersion 4.2.0`nReleased 4/sep/2023
+    MsgBox, MuteActiveWindow`nVersion v%ScriptVersion%
 }
+
+CheckForUpdates() {
+    ; Define the URL of your raw VERSION text file on GitHub
+    GitHubVersionURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/VERSION"
+    
+    ; Define script directories
+    UpdateScriptBat := A_ScriptDir . "\Scripts\UpdateScript.bat"
+
+    ; Make an HTTP request to the GitHub VERSION file
+    oHTTP := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    oHTTP.Open("GET", GitHubVersionURL, false)
+    oHTTP.Send()
+
+    ; Check if the request was successful
+    if (oHTTP.Status = 200) {
+        ; Get the content of the VERSION file
+        LatestVersion := oHTTP.ResponseText
+
+        ; Trim any trailing whitespace or characters from the version strings
+        StringTrimRight, LatestVersion, LatestVersion, 1
+        StringTrimRight, ScriptVersion, ScriptVersion, 0
+
+        ; Uncomment to see comparing of versions
+        ; MsgBox, LatestVersion: %LatestVersion%`nScriptVersion: %ScriptVersion%
+
+        ; Compare the full version strings
+        if (ScriptVersion != LatestVersion) {
+            ; Versions are different, prompt the user
+            LatestMajor := SubStr(LatestVersion, 1, InStr(LatestVersion, ".") - 1)
+            LocalMajor := SubStr(ScriptVersion, 1, InStr(ScriptVersion, ".") - 1)
+
+            if (LocalMajor != LatestMajor) {
+                ; Prompt the user to download the update from GitHub
+                MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available on GitHub.`n`nAs this is major version update you need to download it from github's releases.`n`nWould you like to download it?
+                IfMsgBox Yes
+                {
+                    Run, https://github.com/tfurci/MuteActiveWindow
+                }
+            } else {
+                ; Prompt the user to run the local UpdateScript.bat
+                MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available.`n`nAs this is not a major update you can update it using script and will only take a second.`n`nWould you like to run the update script?
+                if (MsgBoxResult = "Yes") {
+                    ; Run the local UpdateScript.bat
+                    Run, %UpdateScriptBat%
+                }
+            }
+        } else {
+            ; Versions are same already.
+        }
+    }
+    else {
+        ; Display a message if the update check fails
+        MsgBox, Update check failed. Please check your internet connection.
+    }
+}
+
+
+
