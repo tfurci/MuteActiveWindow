@@ -21,7 +21,7 @@ GetActiveWindowExe() {
 ExcludedAppsFile := ConfigDir . "\ExcludedApps.txt"
 
 ; Define a variable to store the hotkey
-Hotkey := ""
+Hotkey := "^!p" ; Right Ctrl + Left Alt + P
 
 ; Check if the script is running for the first time
 if (A_PriorHotkey = "") {
@@ -84,4 +84,12 @@ IsExcluded(name, exclusionFile) {
     }
     
     return false
+}
+
+; Define the hotkey to show the About screen (Right Ctrl + Left Alt + P)
+^!p::ShowAboutScreen()
+
+; Function to display the About screen
+ShowAboutScreen() {
+    MsgBox, MuteActiveWindow`nVersion 4.1.0`nReleased 4/sep/2023
 }
