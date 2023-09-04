@@ -10,6 +10,12 @@ ConfigDir := ScriptDir . "\Config"
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
 
+; Add custom menu items to the tray menu
+AddCustomMenus() ; Add custom menu options on script startup
+
+; Set the custom tray icon if it exists
+SetCustomIcon()
+
 ; Function to get the active window's .exe file name
 GetActiveWindowExe() {
     WinGetActiveTitle, title
@@ -86,10 +92,41 @@ IsExcluded(name, exclusionFile) {
     return false
 }
 
-; Define the hotkey to show the About screen (Right Ctrl + Left Alt + P)
-^!p::ShowAboutScreen()
+SetCustomIcon() {
+    ; Define the path to your custom icon file
+    CustomIconPath := A_ScriptDir . "\Config\MAW.ico"
 
-; Function to display the About screen
-ShowAboutScreen() {
-    MsgBox, MuteActiveWindow`nVersion 4.1.0`nReleased 4/sep/2023
+    ; Check if the custom icon file exists
+    if (FileExist(CustomIconPath)) {
+        Menu, Tray, Icon, %CustomIconPath%
+    }
+}
+
+; Enter the main script loop
+return
+
+; Function to add custom menu items to the tray menu
+AddCustomMenus() {
+    Menu, Tray, Add, , ; This empty item adds a separator
+    Menu, Tray, Add, Update Script, UpdateScript
+    Menu, Tray, Add, Version, DisplayVersion
+}
+
+; Function to update the script
+UpdateScript() {
+    ; Define the path to the UpdateScript.bat file using A_ScriptDir
+    UpdateScriptBat := A_ScriptDir . "\Scripts\UpdateScript.bat"
+    
+    ; Check if the batch file exists
+    if (FileExist(UpdateScriptBat)) {
+        ; Run the batch file
+        Run, %UpdateScriptBat%
+    } else {
+        MsgBox, Updater: %UpdateScriptBat%
+    }
+}
+
+; Function to display the version information
+DisplayVersion() {
+    MsgBox, MuteActiveWindow`nVersion 4.2.0`nReleased 4/sep/2023
 }
