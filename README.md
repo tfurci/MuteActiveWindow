@@ -111,7 +111,6 @@ Now, the script will run automatically each time you start Windows.
 To update your MuteActiveWindow script or custom executable pairs, use the following batch files located in the script folder:
 
 - `UpdateScript.bat`: Updates the main script.
-- `UpdatePairs.bat`: Updates the custom executable pairs.
 
 ## License
 
