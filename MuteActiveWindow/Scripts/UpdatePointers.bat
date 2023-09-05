@@ -24,12 +24,12 @@ fc "%localFilePath%.temp" "%localFilePath%" > nul
 
 if errorlevel 1 (
     echo.
-    echo Pairs were downloaded and updated.
+    echo Pointers were downloaded and updated.
     move /y "%localFilePath%.temp" "%localFilePath%" > nul
     echo.
 ) else (
     echo.
-    echo Pairs are already on the latest version.
+    echo Pointers are already on the latest version.
     del "%localFilePath%.temp"
     echo.
 )
