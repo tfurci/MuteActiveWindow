@@ -69,8 +69,16 @@ RunMute:
 
             ; Check if the title or exe is excluded, and skip muting if it is
             if (!IsExcluded(title, ExcludedAppsFile) && !IsExcluded(processName, ExcludedAppsFile)) {
-                ; Run the svcl.exe command to mute/unmute the application without waiting
-                RunWait, %ScriptDir%\svcl.exe /Switch "%title%", , Hide
+                ; Check if the title is in the custom pointer file
+                if (IsTitleInCustomPointers(title)) {
+                    targetExePointer := IsTitleInCustomPointers(title)
+
+                    ; Run the svcl.exe command to mute/unmute the application without waiting
+                    MsgBox, Muting: %targetExePointer%
+                    RunWait, %ScriptDir%\svcl.exe /Switch "%targetExePointer%", , Hide
+                } else {
+                    RunWait, %ScriptDir%\svcl.exe /Switch "%title%", , Hide
+                }
             }
         } else {
             ; Get the .exe name of the active window
@@ -80,10 +88,40 @@ RunMute:
             if (!IsExcluded(exeName, ExcludedAppsFile) && !IsExcluded(processName, ExcludedAppsFile)) {
                 ; Run the svcl.exe command to mute/unmute the active window's .exe
                 RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%", , Hide
+                }
+            }
+        }
+return
+
+IsTitleInCustomPointers(title) {
+    ; Read the CustomPointers.txt file
+    CustomPointersFile := A_ScriptDir . "\Config\CustomPointers.txt"
+    FileRead, customPointers, %customPointersFile%
+
+    ; Split the custom pointers into an array of custom items using line breaks
+    customList := StrSplit(customPointers, "`r`n") ; Use "`r`n" for Windows line breaks
+
+    ; Iterate through the list and check if the title matches any TitleName
+    Loop, % customList.Length() {
+        customItem := Trim(customList[A_Index])
+
+        ; Split the custom item into TitleName and Target.exe using "|"
+        StringSplit, parts, customItem, |
+
+        ; Check if there are exactly 2 parts (titleName and targetExe)
+        if (parts0 == 2) {
+            titleName := Trim(parts1)
+            targetExe := Trim(parts2)
+
+            ; Check if the title matches the TitleName from the file
+            if (title = titleName) {
+                return targetExe
             }
         }
     }
-return
+
+    return false
+}
 
 ; Function to check if a title or exe is in the exclusion list
 IsExcluded(name, exclusionFile) {
