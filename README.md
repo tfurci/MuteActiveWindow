@@ -2,6 +2,7 @@
   <img src="./maw.png" alt="MAW Logo" width="150">
 </div>
 
+
 # MuteActiveWindow
 
 **MuteActiveWindow** is an AutoHotkey script that allows you to mute the currently active window using a custom hotkey. **F1 by default!**
@@ -54,7 +55,7 @@ To mute the active window, use the predefined hotkey (you can customize it in th
 
 ## Customize Hotkey
 
-Change the hotkey by editing the "Hotkey.txt" file (located in the same Config directory) and replacing its contents with your desired hotkey (e.g., "F10").
+Change the hotkey by editing the "Hotkey.txt" file (located in the /Config directory) and replacing its contents with your desired hotkey (e.g., "F10").
 
 ## Adding Exclusions
 
@@ -90,7 +91,7 @@ Suppose you want to exclude Brave (`Brave.exe`) and Xbox (`Xbox`) from being mut
 Brave.exe
 Xbox
 ```
-This will ensure that the script doesn't mute Brave.exe, Discord.exe, and Xbox when the hotkey is pressed.
+This will ensure that the script doesn't mute Brave.exe and Xbox when the hotkey is pressed.
 
 ## Running the Script at Startup
 
@@ -124,7 +125,7 @@ You have two options for manual updates:
 
 #### Option 1: Right-Click on Taskbar Icon
 1. Right-click on the MuteActiveWindow taskbar icon.
-2. Select "Update Script" from the menu.
+2. Select "Check for updates" from the menu.
 
 #### Option 2: Download from GitHub
 1. Visit the [MuteActiveWindow GitHub repository](https://github.com/tfurci/MuteActiveWindow).
