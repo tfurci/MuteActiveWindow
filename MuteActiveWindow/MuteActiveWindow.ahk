@@ -7,7 +7,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "4.0.0"
+global ScriptVersion := "5.1.0"
 
 
 ; Define a variable to control debugging messages
