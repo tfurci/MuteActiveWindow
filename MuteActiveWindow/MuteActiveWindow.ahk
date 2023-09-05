@@ -74,7 +74,6 @@ RunMute:
                     targetExePointer := IsTitleInCustomPointers(title)
 
                     ; Run the svcl.exe command to mute/unmute the application without waiting
-                    MsgBox, Muting: %targetExePointer%
                     RunWait, %ScriptDir%\svcl.exe /Switch "%targetExePointer%", , Hide
                 } else {
                     RunWait, %ScriptDir%\svcl.exe /Switch "%title%", , Hide
