@@ -1,5 +1,6 @@
-<p align="center">
-<a href="https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/maw.png"><img src="hhttps://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/maw.png" align="center" height="150" width="150" ></a>
+<div align="center">
+  <img src="./maw.png" alt="MAW Logo" width="150">
+</div>
 
 # MuteActiveWindow
 
