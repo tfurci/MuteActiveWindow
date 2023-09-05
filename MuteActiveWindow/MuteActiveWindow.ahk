@@ -70,7 +70,7 @@ RunMute:
             ; Check if the title or exe is excluded, and skip muting if it is
             if (!IsExcluded(title, ExcludedAppsFile) && !IsExcluded(processName, ExcludedAppsFile)) {
                 ; Run the svcl.exe command to mute/unmute the application without waiting
-                RunWait, svcl.exe /Switch "%title%", , Hide
+                RunWait, %ScriptDir%\svcl.exe /Switch "%title%", , Hide
             }
         } else {
             ; Get the .exe name of the active window
