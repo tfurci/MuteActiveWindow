@@ -117,9 +117,10 @@ SetCustomIcon() {
 ; Enter the main script loop
 return
 
+; Function to add custom menu items to the tray menu
 AddCustomMenus() {
     Menu, Tray, Add, , ; This empty item adds a separator
-    Menu, Tray, Add, Check for updates, CheckForUpdatesFromMenu
+    Menu, Tray, Add, Update Script, CheckForUpdatesFromMenu
     Menu, Tray, Add, Version, DisplayVersion
 }
 
@@ -154,7 +155,7 @@ CheckForUpdates(isFromMenu := false) {
         StringTrimRight, ScriptVersion, ScriptVersion, 0
 
         ; Uncomment to see comparing of versions
-        ; MsgBox, Latest available version:  v%LatestVersion%`nYour current version:  v%ScriptVersion%
+        ; MsgBox, LatestVersion: %LatestVersion%`nScriptVersion: %ScriptVersion%
 
         ; Compare the full version strings
         if (ScriptVersion != LatestVersion) {
@@ -172,14 +173,15 @@ CheckForUpdates(isFromMenu := false) {
             } else {
                 ; Prompt the user to run the local UpdateScript.bat
                 MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available.`n`nAs this is not a major update, you can update it using the script, and it will only take a second.`n`nWould you like to run the update script?
-                if (MsgBoxResult = "Yes") {
+                IfMsgBox Yes
+				{
                     ; Run the local UpdateScript.bat
                     Run, %UpdateScriptBat%
                 }
             }
         } else if (isFromMenu) {
             ; Display a message if called from the menu and versions are the same
-            MsgBox, Your script is already up-to-date.`n`nLatest available version:  v%LatestVersion%`nYour current version:  v%ScriptVersion%
+            MsgBox, Already on the latest update.
         }
     }
     else {
@@ -187,6 +189,3 @@ CheckForUpdates(isFromMenu := false) {
         MsgBox, Update check failed. Please check your internet connection.
     }
 }
-
-
-
