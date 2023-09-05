@@ -1,3 +1,6 @@
+<p align="center">
+<a href="https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/maw.png"><img src="hhttps://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/maw.png" align="center" height="150" width="150" ></a>
+
 # MuteActiveWindow
 
 **MuteActiveWindow** is an AutoHotkey script that allows you to mute the currently active window using a custom hotkey. **F1 by default!**
