@@ -169,7 +169,7 @@ CheckForUpdates(isFromMenu := false) {
                 MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available on GitHub.`n`nAs this is a major version update, you need to download it from GitHub's releases.`n`nWould you like to download it?
                 IfMsgBox Yes
                 {
-                    Run, https://github.com/tfurci/MuteActiveWindow
+                    Run, https://github.com/tfurci/MuteActiveWindow/releases
                 }
             } else {
                 ; Prompt the user to run the local UpdateScript.bat
