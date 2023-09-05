@@ -31,11 +31,6 @@ if errorlevel 1 (
     :: Run the updated script with AutoHotkey
     start "" /b "AutoHotkey.exe" "%localFilePath%"
 
-    echo.
-    echo For the changes to take effect, please reload your script.
-    echo Or click "Yes" on the opened prompt.
-    echo.
-
 ) else (
     echo.
     echo Script is already on the latest version.

@@ -1,4 +1,5 @@
 #Persistent
+#SingleInstance Force
 SetTitleMatchMode, 2
 
 ; Get the directory of the AutoHotkey script
