@@ -7,7 +7,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "5.1.0"
+global ScriptVersion := "4.0.0"
 
 
 ; Define a variable to control debugging messages
@@ -120,7 +120,7 @@ return
 ; Function to add custom menu items to the tray menu
 AddCustomMenus() {
     Menu, Tray, Add, , ; This empty item adds a separator
-    Menu, Tray, Add, Check for updates, CheckForUpdatesFromMenu
+    Menu, Tray, Add, Update Script, CheckForUpdates
     Menu, Tray, Add, Version, DisplayVersion
 }
 
@@ -129,11 +129,7 @@ DisplayVersion() {
     MsgBox, MuteActiveWindow`nVersion v%ScriptVersion%
 }
 
-CheckForUpdatesFromMenu() {
-    CheckForUpdates(true) ; Pass 'true' to indicate that it's called from the menu
-}
-
-CheckForUpdates(isFromMenu := false) {
+CheckForUpdates() {
     ; Define the URL of your raw VERSION text file on GitHub
     GitHubVersionURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/VERSION"
     
@@ -155,7 +151,7 @@ CheckForUpdates(isFromMenu := false) {
         StringTrimRight, ScriptVersion, ScriptVersion, 0
 
         ; Uncomment to see comparing of versions
-        ; MsgBox, Latest available version:  v%LatestVersion%`nYour current version:  v%ScriptVersion%
+        ; MsgBox, LatestVersion: %LatestVersion%`nScriptVersion: %ScriptVersion%
 
         ; Compare the full version strings
         if (ScriptVersion != LatestVersion) {
@@ -165,22 +161,22 @@ CheckForUpdates(isFromMenu := false) {
 
             if (LocalMajor != LatestMajor) {
                 ; Prompt the user to download the update from GitHub
-                MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available on GitHub.`n`nAs this is a major version update, you need to download it from GitHub's releases.`n`nWould you like to download it?
+                MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available on GitHub.`n`nAs this is major version update you need to download it from github's releases.`n`nWould you like to download it?
                 IfMsgBox Yes
                 {
                     Run, https://github.com/tfurci/MuteActiveWindow
                 }
             } else {
                 ; Prompt the user to run the local UpdateScript.bat
-                MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available.`n`nAs this is not a major update, you can update it using the script, and it will only take a second.`n`nWould you like to run the update script?
-                if (MsgBoxResult = "Yes") {
-                    ; Run the local UpdateScript.bat
-                    Run, %UpdateScriptBat%
-                }
+                MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available.`n`nAs this is not a major update you can update it using script and will only take a second.`n`nWould you like to run the update script?
+                 IfMsgBox Yes
+				{
+					; Run the local UpdateScript.bat
+					Run, %UpdateScriptBat%
+				}
             }
-        } else if (isFromMenu) {
-            ; Display a message if called from the menu and versions are the same
-            MsgBox, Your script is already up-to-date.`n`nLatest available version:  v%LatestVersion%`nYour current version:  v%ScriptVersion%
+        } else {
+            ; Versions are same already.
         }
     }
     else {
