@@ -4,7 +4,7 @@
 
 ---
 
-This script was originally based on [kristoffer-tvera/mute-current-application](https://github.com/kristoffer-tvera/mute-current-application) but was rewritten because the previous version didn't work for me with the majority of UWP and some other apps.
+This script was inspired by [kristoffer-tvera/mute-current-application](https://github.com/kristoffer-tvera/mute-current-application) but was rewritten for svcl because the previous version didn't work for me with the majority of UWP and some other apps.
 
 ## Table of Contents
 
@@ -19,6 +19,8 @@ This script was originally based on [kristoffer-tvera/mute-current-application](
   - [Automatic Startup](#automatic-startup)
   - [Manual Startup](#manual-startup)
 - [Updating](#updating-your-script-and-pairs)
+  - [Automatic Update](#automatic-updates)
+  - [Manual Update](#manual-updates)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 
