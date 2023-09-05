@@ -52,12 +52,12 @@ fc "%localCustomPointersPath%.temp" "%localCustomPointersPath%" > nul
 
 if errorlevel 1 (
     echo.
-    echo CustomPointers.txt downloaded and updated.
+    echo CustomPointers downloaded and updated.
     move /y "%localCustomPointersPath%.temp" "%localCustomPointersPath%" > nul
     echo.
 ) else (
     echo.
-    echo CustomPointers.txt is already on the latest version.
+    echo CustomPointers are already on the latest version.
     del "%localCustomPointersPath%.temp"
     echo.
 )
