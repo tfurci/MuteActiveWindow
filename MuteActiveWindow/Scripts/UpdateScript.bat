@@ -26,22 +26,11 @@ set "localCustomPointersPath=%configDirectory%\CustomPointers.txt"
 md "%scriptsDirectory%" 2>nul
 md "%configDirectory%" 2>nul
 
-:: Download and update the main script from GitHub
-curl -k -o "%localMainScriptPath%.temp" "%githubMainScriptURL%"
-
-:: Compare the content of the downloaded main script file with the local file
-fc "%localMainScriptPath%.temp" "%localMainScriptPath%" > nul
-
-if errorlevel 1 (
-    echo.
-    echo Main script downloaded and updated.
-    move /y "%localMainScriptPath%.temp" "%localMainScriptPath%" > nul
-    echo.
-) else (
-    echo.
-    echo Main script is already on the latest version.
-    del "%localMainScriptPath%.temp"
-    echo.
+:: Prompt the user to confirm CustomPointers.txt update
+choice /C 12 /M "Do you want to update CustomPointers.txt? (1 for Yes, 2 for No)"
+if errorlevel 2 (
+    echo Not updating CustomPointers.txt.
+    goto :continue
 )
 
 :: Download and update the CustomPointers.txt file from GitHub
@@ -62,6 +51,7 @@ if errorlevel 1 (
     echo.
 )
 
+:continue
 :: Start AutoHotkey
 start "" /b "AutoHotkey.exe" "%localMainScriptPath%"
 
