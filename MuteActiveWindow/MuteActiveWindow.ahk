@@ -7,7 +7,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "5.1.0"
+global ScriptVersion := "5.2.0"
 
 
 ; Define a variable to control debugging messages
@@ -181,7 +181,7 @@ CheckForUpdates(isFromMenu := false) {
             }
         } else if (isFromMenu) {
             ; Display a message if called from the menu and versions are the same
-            MsgBox, Already on the latest update.
+            MsgBox, Your script is already up-to-date.`n`nLatest available version:  v%LatestVersion%`nYour current version:  v%ScriptVersion%
         }
     }
     else {
