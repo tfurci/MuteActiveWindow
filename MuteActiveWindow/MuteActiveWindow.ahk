@@ -158,7 +158,8 @@ return
 ; Function to add custom menu items to the tray menu
 AddCustomMenus() {
     Menu, Tray, Add, , ; This empty item adds a separator
-    Menu, Tray, Add, Update Script, CheckForUpdatesFromMenu
+    Menu, Tray, Add, Check for updates, CheckForUpdatesFromMenu
+    Menu, Tray, Add, Update Pointers, UpdatePoiners
     Menu, Tray, Add, Version, DisplayVersion
 }
 
@@ -227,4 +228,9 @@ CheckForUpdates(isFromMenu := false) {
         ; Display a message if the update check fails
         MsgBox, Update check failed. Please check your internet connection.
     }
+}
+
+UpdatePoiners() {
+    UpdatePoinersBat := A_ScriptDir . "\Scripts\UpdatePointers.bat"
+    Run, %UpdatePoinersBat%
 }
