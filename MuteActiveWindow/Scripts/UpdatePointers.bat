@@ -16,6 +16,13 @@ set "localFilePath=%configDirectory%\CustomPointers.txt"
 :: Ensure that the local directory exists (Config folder)
 md "%configDirectory%" 2>nul
 
+:: Prompt the user to confirm updating custom pairs
+choice /C 12 /M "Do you want to update custom pairs? (1 for Yes, 2 for No)"
+if errorlevel 2 (
+    echo Not updating custom pairs.
+    goto :skip_update
+)
+
 :: Download the script from GitHub
 curl -k -o "%localFilePath%.temp" "%githubRawURL%"
 
@@ -34,4 +41,5 @@ if errorlevel 1 (
     echo.
 )
 
+:skip_update
 pause
