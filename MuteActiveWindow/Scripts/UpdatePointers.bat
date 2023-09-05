@@ -24,12 +24,12 @@ fc "%localFilePath%.temp" "%localFilePath%" > nul
 
 if errorlevel 1 (
     echo.
-    echo Pointers were downloaded and updated.
+    echo CustomPointers downloaded and updated.
     move /y "%localFilePath%.temp" "%localFilePath%" > nul
     echo.
 ) else (
     echo.
-    echo Pointers are already on the latest version.
+    echo CustomPointers are already on the latest version.
     del "%localFilePath%.temp"
     echo.
 )
