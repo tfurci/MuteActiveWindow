@@ -176,6 +176,9 @@ CheckForUpdates(isFromMenu := false) {
     ; Define the URL of your raw VERSION text file on GitHub
     GitHubVersionURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/VERSION"
     
+    ; Define the URL of your raw CHANGELOG text file on GitHub
+    GitHubChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/CHANGELOG"
+
     ; Define script directories
     UpdateScriptBat := A_ScriptDir . "\Scripts\UpdateScript.bat"
 
@@ -194,6 +197,20 @@ CheckForUpdates(isFromMenu := false) {
         StringTrimRight, LatestVersion, LatestVersion, 1
         StringTrimRight, ScriptVersion, ScriptVersion, 0
 
+        ; Make an HTTP request to the GitHub CHANGELOG file
+        oHTTP.Open("GET", GitHubChangelogURL, false)
+        oHTTP.SetRequestHeader("Cache-Control", "no-cache")  ; Prevent caching
+        oHTTP.Send()
+
+        ; Check if the request for CHANGELOG was successful
+        if (oHTTP.Status = 200) {
+            ; Get the content of the CHANGELOG file
+            Changelog := oHTTP.ResponseText
+        } else {
+            ; Handle the case where fetching the CHANGELOG fails
+            Changelog := "Failed to retrieve changelog. Check your internet connection."
+        }
+
         ; Uncomment to see comparing of versions
         ; MsgBox, LatestVersion: %LatestVersion%`nScriptVersion: %ScriptVersion%
 
@@ -205,23 +222,23 @@ CheckForUpdates(isFromMenu := false) {
 
             if (LocalMajor != LatestMajor) {
                 ; Prompt the user to download the update from GitHub
-                MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available on GitHub.`n`nAs this is a major version update, you need to download it from GitHub's releases.`n`nWould you like to download it?
+                MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available on GitHub.`n`nAs this is a major version update, you need to download it from GitHub's releases.`n`nChangelog:`n%Changelog%`n`nWould you like to download it?
                 IfMsgBox Yes
                 {
                     Run, https://github.com/tfurci/MuteActiveWindow/releases
                 }
             } else {
                 ; Prompt the user to run the local UpdateScript.bat
-                MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available.`n`nAs this is not a major update, you can update it using the script, and it will only take a second.`n`nWould you like to run the update script?
+                MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available.`n`nAs this is not a major update, you can update it using the script, and it will only take a second.`n`nChangelog:`n%Changelog%`n`nWould you like to run the update script?
                 IfMsgBox Yes
-				{
+                {
                     ; Run the local UpdateScript.bat
                     Run, %UpdateScriptBat%
                 }
             }
         } else if (isFromMenu) {
             ; Display a message if called from the menu and versions are the same
-            MsgBox, Your script is already up-to-date.`n`nLatest available version:  v%LatestVersion%`nYour current version:  v%ScriptVersion%
+            MsgBox, Your script is already up-to-date.`n`nLatest available version:  v%LatestVersion%`nYour current version:  v%ScriptVersion%`n`nChangelog:`n%Changelog%
         }
     }
     else {
