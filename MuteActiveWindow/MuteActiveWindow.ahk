@@ -8,7 +8,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "5.2.0"
+global ScriptVersion := "5.2.1"
 
 
 ; Define a variable to control debugging messages
@@ -144,6 +144,7 @@ CheckForUpdates(isFromMenu := false) {
     ; Make an HTTP request to the GitHub VERSION file
     oHTTP := ComObjCreate("WinHttp.WinHttpRequest.5.1")
     oHTTP.Open("GET", GitHubVersionURL, false)
+    oHTTP.SetRequestHeader("Cache-Control", "no-cache")  ; Prevent caching
     oHTTP.Send()
 
     ; Check if the request was successful
