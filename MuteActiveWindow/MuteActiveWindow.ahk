@@ -8,7 +8,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "6.0.0"
+global ScriptVersion := "6.1.0"
 
 
 ; Define a variable to control debugging messages
@@ -186,8 +186,13 @@ CheckForUpdates(isFromMenu := false) {
     oHTTP := ComObjCreate("WinHttp.WinHttpRequest.5.1")
     oHTTP.Open("GET", GitHubVersionURL, false)
     oHTTP.SetRequestHeader("Cache-Control", "no-cache")  ; Prevent caching
-    oHTTP.Send()
-
+    Try {
+        oHTTP.Send()
+    } Catch {
+        ; No internet connectivity, display a message and exit
+        MsgBox, No internet connection. Please check your internet connection.
+        return
+    }
     ; Check if the request was successful
     if (oHTTP.Status = 200) {
         ; Get the content of the VERSION file
