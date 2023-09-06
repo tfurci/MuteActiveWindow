@@ -1,5 +1,1 @@
--Added changelog to update prompt: We've added a list of changes made to each newer version it will be automatically displayed if you have auto-updates enabled.
-
--UWP app fix: We've added a custom pointers to fix muting some uwp apps Microsoft Store|WinStore.App.exe will point app name to correct target .exe that gets muted
-
--Update pointers confirmation: We've added a prompt that will only update pointers if you wish so to prevent replacing your custom set ones, but feel free to open pull requests to add all the different pointers for others to use
+-Fixed errors that occured when running update check without internet connection
