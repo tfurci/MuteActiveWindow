@@ -1,2 +1,0 @@
-Movies & TV|Video.UI.exe
-Microsoft Store|WinStore.App.exe

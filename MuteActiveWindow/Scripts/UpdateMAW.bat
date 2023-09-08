@@ -4,27 +4,17 @@ setlocal enabledelayedexpansion
 :: Specify the URL of the raw script on GitHub (Main Script)
 set "githubMainScriptURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/MuteActiveWindow.ahk"
 
-:: Specify the URL of the raw CustomPointers.txt file on GitHub
-set "githubCustomPointersURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/Config/CustomPointers.txt"
-
-:: Specify the root directory where the scripts are currently located
+:: Specify the root directory where the script is currently located
 set "scriptDirectory=%~dp0"
 
 :: Specify the "Scripts" directory relative to the script directory
 set "scriptsDirectory=%scriptDirectory%.."
 
-:: Specify the "Config" directory relative to the script directory
-set "configDirectory=%scriptDirectory%..\Config"
-
 :: Specify the full path to the local main script file
 set "localMainScriptPath=%scriptsDirectory%\MuteActiveWindow.ahk"
 
-:: Specify the full path to the local CustomPointers.txt file
-set "localCustomPointersPath=%configDirectory%\CustomPointers.txt"
-
-:: Ensure that the local directories exist (Scripts and Config folders)
+:: Ensure that the local "Scripts" directory exists
 md "%scriptsDirectory%" 2>nul
-md "%configDirectory%" 2>nul
 
 :: Download and update the main script from GitHub
 curl -k -o "%localMainScriptPath%.temp" "%githubMainScriptURL%"
@@ -44,33 +34,22 @@ if errorlevel 1 (
     echo.
 )
 
-:: Prompt the user to confirm updating CustomPointers.txt
-choice /C 12 /M "Do you want to update CustomPointers.txt? (1 for Yes, 2 for No)"
-if errorlevel 2 (
-    echo Not updating CustomPointers.txt.
-    goto :skip_update
-)
+:: Set the path to the previous folder
+set "previousFolder=..\"
 
-:: Download and update the CustomPointers.txt file from GitHub
-curl -k -o "%localCustomPointersPath%.temp" "%githubCustomPointersURL%"
+:: Set the name of the AutoHotkey script
+set "scriptName=MuteActiveWindow.ahk"
 
-:: Compare the content of the downloaded CustomPointers.txt file with the local file
-fc "%localCustomPointersPath%.temp" "%localCustomPointersPath%" > nul
+:: Combine the path and script name to create the full path to the script
+set "scriptPath=%previousFolder%%scriptName%"
 
-if errorlevel 1 (
-    echo.
-    echo CustomPointers downloaded and updated.
-    move /y "%localCustomPointersPath%.temp" "%localCustomPointersPath%" > nul
-    echo.
+:: Check if the script file exists
+if exist "%scriptPath%" (
+    echo Running %scriptName%...
+    start "" /b "%scriptPath%"
 ) else (
-    echo.
-    echo CustomPointers are already on the latest version.
-    del "%localCustomPointersPath%.temp"
-    echo.
+    echo The script %scriptName% does not exist in the previous folder. Or is not name MuteActiveWindow.ahk
+    pause
 )
-
-:skip_update
-:: Start AutoHotkey
-start "" /b "AutoHotkey.exe" "%localMainScriptPath%"
 
 pause

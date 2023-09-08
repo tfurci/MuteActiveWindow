@@ -8,8 +8,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "6.1.0"
-
+global ScriptVersion := "7.0.0"
 
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
@@ -64,63 +63,27 @@ RunMute:
 
         ; Check if the active window's process is ApplicationFrameHost.exe
         if (processName = "ApplicationFrameHost.exe") {
-            ; Get the title of the active window (topbar text)
-            WinGetActiveTitle, title
-
-            ; Check if the title or exe is excluded, and skip muting if it is
-            if (!IsExcluded(title, ExcludedAppsFile) && !IsExcluded(processName, ExcludedAppsFile)) {
-                ; Check if the title is in the custom pointer file
-                if (IsTitleInCustomPointers(title)) {
-                    targetExePointer := IsTitleInCustomPointers(title)
-
-                    ; Run the svcl.exe command to mute/unmute the application without waiting
-                    RunWait, %ScriptDir%\svcl.exe /Switch "%targetExePointer%", , Hide
-                } else {
-                    RunWait, %ScriptDir%\svcl.exe /Switch "%title%", , Hide
+			WindowUWP := WinExist("A")
+            ControlGetFocus, FocusedControl, ahk_id %WindowUWP%
+            ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowUWP%
+            WinGet, uwpprocess, processname, ahk_id %Hwnd%
+            WinGet, Pid, Pid, ahk_id %Hwnd%
+            if (!IsExcluded(uwpprocess, ExcludedAppsFile)) {
+                ; Run the svcl.exe command to mute/unmute the active window's .exe
+                RunWait, %ScriptDir%\svcl.exe /Switch "%uwpprocess%", , Hide
                 }
-            }
-        } else {
+		} else {
             ; Get the .exe name of the active window
             exeName := GetActiveWindowExe()
 
             ; Check if the title or exe is excluded, and skip muting if it is
-            if (!IsExcluded(exeName, ExcludedAppsFile) && !IsExcluded(processName, ExcludedAppsFile)) {
+            if (!IsExcluded(exeName, ExcludedAppsFile)) {
                 ; Run the svcl.exe command to mute/unmute the active window's .exe
                 RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%", , Hide
                 }
             }
         }
 return
-
-IsTitleInCustomPointers(title) {
-    ; Read the CustomPointers.txt file
-    CustomPointersFile := A_ScriptDir . "\Config\CustomPointers.txt"
-    FileRead, customPointers, %customPointersFile%
-
-    ; Split the custom pointers into an array of custom items using line breaks
-    customList := StrSplit(customPointers, "`r`n") ; Use "`r`n" for Windows line breaks
-
-    ; Iterate through the list and check if the title matches any TitleName
-    Loop, % customList.Length() {
-        customItem := Trim(customList[A_Index])
-
-        ; Split the custom item into TitleName and Target.exe using "|"
-        StringSplit, parts, customItem, |
-
-        ; Check if there are exactly 2 parts (titleName and targetExe)
-        if (parts0 == 2) {
-            titleName := Trim(parts1)
-            targetExe := Trim(parts2)
-
-            ; Check if the title matches the TitleName from the file
-            if (title = titleName) {
-                return targetExe
-            }
-        }
-    }
-
-    return false
-}
 
 ; Function to check if a title or exe is in the exclusion list
 IsExcluded(name, exclusionFile) {
@@ -159,7 +122,6 @@ return
 AddCustomMenus() {
     Menu, Tray, Add, , ; This empty item adds a separator
     Menu, Tray, Add, Check for updates, CheckForUpdatesFromMenu
-    Menu, Tray, Add, Update Pointers, UpdatePoiners
     Menu, Tray, Add, Version, DisplayVersion
 }
 
@@ -180,7 +142,7 @@ CheckForUpdates(isFromMenu := false) {
     GitHubChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/CHANGELOG"
 
     ; Define script directories
-    UpdateScriptBat := A_ScriptDir . "\Scripts\UpdateScript.bat"
+    UpdateScriptBat := A_ScriptDir . "\Scripts\BatUpdater.bat"
 
     ; Make an HTTP request to the GitHub VERSION file
     oHTTP := ComObjCreate("WinHttp.WinHttpRequest.5.1")
@@ -250,9 +212,4 @@ CheckForUpdates(isFromMenu := false) {
         ; Display a message if the update check fails
         MsgBox, Update check failed. Please check your internet connection.
     }
-}
-
-UpdatePoiners() {
-    UpdatePoinersBat := A_ScriptDir . "\Scripts\UpdatePointers.bat"
-    Run, %UpdatePoinersBat%
 }

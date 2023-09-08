@@ -1,1 +1,3 @@
--Fixed errors that occured when running update check without internet connection
+-Changed how UWP apps are handled. Pointers are now removed as it can get app's exe without them
+
+-Added bat updater that will automatically update script updater to hopefully minimize downloading files from github's releases
