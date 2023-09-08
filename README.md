@@ -64,6 +64,7 @@ You can configure the script to exclude specific applications from being muted. 
 1. Open the `ExcludedApps.txt` file located in the "Config" folder.
 
 2. Add the exe's of the applications you want to exclude, each on a separate line, in the following format:
+   You can get UWP exe's with this script from uwp-exe branch [link](https://github.com/tfurci/MuteActiveWindow/blob/uwp-exe/MuteActiveWindow/MAW-EXE.ahk)
 
    - For executable files and UWP apps (e.g., Brave.exe, WinStore.App.exe):
      ```
@@ -71,9 +72,9 @@ You can configure the script to exclude specific applications from being muted. 
      Spotify.exe
      ```
 
-3. Save the `ExcludedApps.txt` file.
+4. Save the `ExcludedApps.txt` file.
 
-4. Reload the script (or press the hotkey if it's already running) for the changes to take effect.
+5. Reload the script (or press the hotkey if it's already running) for the changes to take effect.
 
 Now, the specified applications will be excluded from the script's muting behavior.
 
