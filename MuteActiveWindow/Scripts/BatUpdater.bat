@@ -35,7 +35,7 @@ if errorlevel 1 (
 ) else (
     echo Script is already up to date.
     del UpdatedMAW.bat
-    pause
+    call UpdateMAW.bat
     exit /b 0
 )
 In this modified script:
