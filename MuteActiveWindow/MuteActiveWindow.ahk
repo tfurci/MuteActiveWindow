@@ -64,11 +64,11 @@ RunMute:
 
         ; Check if the active window's process is ApplicationFrameHost.exe
         if (processName = "ApplicationFrameHost.exe") {
-			WindowHwnd := WinExist("A")
+			WindowUWP := WinExist("A")
 
 			while (1) {
-				ControlGetFocus, FocusedControl, ahk_id %WindowHwnd%
-				ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowHwnd%
+				ControlGetFocus, FocusedControl, ahk_id %WindowUWP%
+				ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowUWP%
 				WinGet, uwpprocess, processname, ahk_id %Hwnd%
 
 				if (uwpprocess = "ApplicationFrameHost.exe") {
@@ -76,7 +76,7 @@ RunMute:
 					Loop % list {
 						if (list%A_Index% = Hwnd) {
 							n := A_Index - 1
-							WindowHwnd := list%n%
+							WindowUWP := list%n%
 							Continue
 						}
 					}
