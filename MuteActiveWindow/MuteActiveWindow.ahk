@@ -161,7 +161,7 @@ CheckForUpdates(isFromMenu := false) {
         LatestVersion := oHTTP.ResponseText
 
         ; Trim any trailing whitespace or characters from the version strings
-        StringTrimRight, LatestVersion, LatestVersion, 1
+        StringTrimRight, LatestVersion, LatestVersion, 0
         StringTrimRight, ScriptVersion, ScriptVersion, 0
 
         ; Make an HTTP request to the GitHub CHANGELOG file
