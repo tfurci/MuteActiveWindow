@@ -8,7 +8,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "6.0.0"
+global ScriptVersion := "7.0.0"
 
 
 ; Define a variable to control debugging messages
@@ -64,22 +64,29 @@ RunMute:
 
         ; Check if the active window's process is ApplicationFrameHost.exe
         if (processName = "ApplicationFrameHost.exe") {
-            ; Get the title of the active window (topbar text)
-            WinGetActiveTitle, title
+			WindowHwnd := WinExist("A")
 
-            ; Check if the title or exe is excluded, and skip muting if it is
-            if (!IsExcluded(title, ExcludedAppsFile) && !IsExcluded(processName, ExcludedAppsFile)) {
-                ; Check if the title is in the custom pointer file
-                if (IsTitleInCustomPointers(title)) {
-                    targetExePointer := IsTitleInCustomPointers(title)
+			while (1) {
+				ControlGetFocus, FocusedControl, ahk_id %WindowHwnd%
+				ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowHwnd%
+				WinGet, uwpprocess, processname, ahk_id %Hwnd%
 
-                    ; Run the svcl.exe command to mute/unmute the application without waiting
-                    RunWait, %ScriptDir%\svcl.exe /Switch "%targetExePointer%", , Hide
-                } else {
-                    RunWait, %ScriptDir%\svcl.exe /Switch "%title%", , Hide
-                }
-            }
-        } else {
+				if (uwpprocess = "ApplicationFrameHost.exe") {
+					WinGet, list, list
+					Loop % list {
+						if (list%A_Index% = Hwnd) {
+							n := A_Index - 1
+							WindowHwnd := list%n%
+							Continue
+						}
+					}
+				} else {
+					WinGet, Pid, Pid, ahk_id %Hwnd%
+					RunWait, %ScriptDir%\svcl.exe /Switch %uwpprocess%, , Hide
+					break
+				}
+			}
+		} else {
             ; Get the .exe name of the active window
             exeName := GetActiveWindowExe()
 
@@ -91,36 +98,6 @@ RunMute:
             }
         }
 return
-
-IsTitleInCustomPointers(title) {
-    ; Read the CustomPointers.txt file
-    CustomPointersFile := A_ScriptDir . "\Config\CustomPointers.txt"
-    FileRead, customPointers, %customPointersFile%
-
-    ; Split the custom pointers into an array of custom items using line breaks
-    customList := StrSplit(customPointers, "`r`n") ; Use "`r`n" for Windows line breaks
-
-    ; Iterate through the list and check if the title matches any TitleName
-    Loop, % customList.Length() {
-        customItem := Trim(customList[A_Index])
-
-        ; Split the custom item into TitleName and Target.exe using "|"
-        StringSplit, parts, customItem, |
-
-        ; Check if there are exactly 2 parts (titleName and targetExe)
-        if (parts0 == 2) {
-            titleName := Trim(parts1)
-            targetExe := Trim(parts2)
-
-            ; Check if the title matches the TitleName from the file
-            if (title = titleName) {
-                return targetExe
-            }
-        }
-    }
-
-    return false
-}
 
 ; Function to check if a title or exe is in the exclusion list
 IsExcluded(name, exclusionFile) {
@@ -159,7 +136,6 @@ return
 AddCustomMenus() {
     Menu, Tray, Add, , ; This empty item adds a separator
     Menu, Tray, Add, Check for updates, CheckForUpdatesFromMenu
-    Menu, Tray, Add, Update Pointers, UpdatePoiners
     Menu, Tray, Add, Version, DisplayVersion
 }
 
@@ -186,8 +162,13 @@ CheckForUpdates(isFromMenu := false) {
     oHTTP := ComObjCreate("WinHttp.WinHttpRequest.5.1")
     oHTTP.Open("GET", GitHubVersionURL, false)
     oHTTP.SetRequestHeader("Cache-Control", "no-cache")  ; Prevent caching
-    oHTTP.Send()
-
+    Try {
+        oHTTP.Send()
+    } Catch {
+        ; No internet connectivity, display a message and exit
+        MsgBox, No internet connection. Please check your internet connection.
+        return
+    }
     ; Check if the request was successful
     if (oHTTP.Status = 200) {
         ; Get the content of the VERSION file
@@ -245,9 +226,4 @@ CheckForUpdates(isFromMenu := false) {
         ; Display a message if the update check fails
         MsgBox, Update check failed. Please check your internet connection.
     }
-}
-
-UpdatePoiners() {
-    UpdatePoinersBat := A_ScriptDir . "\Scripts\UpdatePointers.bat"
-    Run, %UpdatePoinersBat%
 }
