@@ -10,7 +10,6 @@ ConfigDir := ScriptDir . "\Config"
 
 global ScriptVersion := "7.0.0"
 
-
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
 
