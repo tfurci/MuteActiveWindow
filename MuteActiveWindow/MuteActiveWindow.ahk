@@ -65,33 +65,20 @@ RunMute:
         ; Check if the active window's process is ApplicationFrameHost.exe
         if (processName = "ApplicationFrameHost.exe") {
 			WindowUWP := WinExist("A")
-
-			while (1) {
-				ControlGetFocus, FocusedControl, ahk_id %WindowUWP%
-				ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowUWP%
-				WinGet, uwpprocess, processname, ahk_id %Hwnd%
-
-				if (uwpprocess = "ApplicationFrameHost.exe") {
-					WinGet, list, list
-					Loop % list {
-						if (list%A_Index% = Hwnd) {
-							n := A_Index - 1
-							WindowUWP := list%n%
-							Continue
-						}
-					}
-				} else {
-					WinGet, Pid, Pid, ahk_id %Hwnd%
-					RunWait, %ScriptDir%\svcl.exe /Switch %uwpprocess%, , Hide
-					break
-				}
-			}
+            ControlGetFocus, FocusedControl, ahk_id %WindowUWP%
+            ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowUWP%
+            WinGet, uwpprocess, processname, ahk_id %Hwnd%
+            WinGet, Pid, Pid, ahk_id %Hwnd%
+            if (!IsExcluded(uwpprocess, ExcludedAppsFile)) {
+                ; Run the svcl.exe command to mute/unmute the active window's .exe
+                RunWait, %ScriptDir%\svcl.exe /Switch "%uwpprocess%", , Hide
+                }
 		} else {
             ; Get the .exe name of the active window
             exeName := GetActiveWindowExe()
 
             ; Check if the title or exe is excluded, and skip muting if it is
-            if (!IsExcluded(exeName, ExcludedAppsFile) && !IsExcluded(processName, ExcludedAppsFile)) {
+            if (!IsExcluded(exeName, ExcludedAppsFile)) {
                 ; Run the svcl.exe command to mute/unmute the active window's .exe
                 RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%", , Hide
                 }

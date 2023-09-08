@@ -1,2 +1,2 @@
-AppName
-App.exe
+AppName.exe
+AppName2.exe
