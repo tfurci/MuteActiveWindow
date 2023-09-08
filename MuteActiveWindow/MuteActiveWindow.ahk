@@ -143,7 +143,7 @@ CheckForUpdates(isFromMenu := false) {
     GitHubChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/CHANGELOG"
 
     ; Define script directories
-    UpdateScriptBat := A_ScriptDir . "\Scripts\UpdateScript.bat"
+    UpdateScriptBat := A_ScriptDir . "\Scripts\BatUpdater.bat"
 
     ; Make an HTTP request to the GitHub VERSION file
     oHTTP := ComObjCreate("WinHttp.WinHttpRequest.5.1")
