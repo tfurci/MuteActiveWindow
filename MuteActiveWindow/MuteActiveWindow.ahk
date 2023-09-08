@@ -213,3 +213,11 @@ CheckForUpdates(isFromMenu := false) {
         MsgBox, Update check failed. Please check your internet connection.
     }
 }
+
+^!P::
+    WindowUWP := WinExist("A")
+    ControlGetFocus, FocusedControl, ahk_id %WindowUWP%
+    ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowUWP%
+    WinGet, uwpprocess, processname, ahk_id %Hwnd%
+    MsgBox %uwpprocess%
+return

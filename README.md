@@ -64,7 +64,7 @@ You can configure the script to exclude specific applications from being muted. 
 1. Open the `ExcludedApps.txt` file located in the "Config" folder.
 
 2. Add the exe's of the applications you want to exclude, each on a separate line, in the following format:
-   You can get UWP exe's with this script from uwp-exe branch [link](https://github.com/tfurci/MuteActiveWindow/blob/uwp-exe/MuteActiveWindow/MAW-EXE.ahk)
+   You can get UWP exe's with this script from uwp-exe branch [link](https://github.com/tfurci/MuteActiveWindow/blob/uwp-exe/MuteActiveWindow/MAW-EXE.ahk) or use CTRL+ALT+P hotkey (on MAW v7.1.0+)
 
    - For executable files and UWP apps (e.g., Brave.exe, WinStore.App.exe):
      ```
