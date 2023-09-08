@@ -1,2 +1,0 @@
-AppName.exe
-AppName2.exe
