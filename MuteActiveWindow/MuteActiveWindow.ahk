@@ -219,5 +219,16 @@ CheckForUpdates(isFromMenu := false) {
     ControlGetFocus, FocusedControl, ahk_id %WindowUWP%
     ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowUWP%
     WinGet, uwpprocess, processname, ahk_id %Hwnd%
-    MsgBox %uwpprocess%
+    
+    ; Prompt the user with a message box with "Yes" and "No" buttons
+    MsgBox, 4, Add Exe to excluded apps., Add EXE to Config/ExcludedApps.txt?`n%uwpprocess%
+    
+    ; Check if the user clicked "Yes"
+    IfMsgBox Yes
+    {   
+        FileAppend, `n%uwpprocess%, %ConfigDir%\ExcludedApps.txt
+        
+        MsgBox, Added %uwpprocess% to Config/ExcludedApps.txt
+    }
+    
 return
