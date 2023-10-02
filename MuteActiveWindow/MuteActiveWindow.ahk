@@ -8,7 +8,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "7.2.0"
+global ScriptVersion := "7.3.0"
 
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
@@ -70,8 +70,7 @@ RunMute:
             WinGet, Pid, Pid, ahk_id %Hwnd%
             if (!IsExcluded(uwpprocess, ExcludedAppsFile)) {
                 ; Run the svcl.exe command to mute/unmute the active window's .exe
-                RunWait, %ScriptDir%\svcl.exe /Switch "%uwpprocess%", , Hide
-                Run, %ScriptDir%\svcl.exe /Unmute DefaultCaptureDevice, , Hide
+                RunWait, %ScriptDir%\svcl.exe /Switch "%uwpprocess%" /Unmute "DefaultCaptureDevice", , Hide
                 }
 		} else {
             ; Get the .exe name of the active window
@@ -80,8 +79,7 @@ RunMute:
             ; Check if the title or exe is excluded, and skip muting if it is
             if (!IsExcluded(exeName, ExcludedAppsFile)) {
                 ; Run the svcl.exe command to mute/unmute the active window's .exe
-                RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%", , Hide
-                Run, %ScriptDir%\svcl.exe /Unmute DefaultCaptureDevice, , Hide
+                RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%" /Unmute "DefaultCaptureDevice", , Hide
                 }
             }
         }
