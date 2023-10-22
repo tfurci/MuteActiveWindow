@@ -8,7 +8,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "7.3.0"
+global ScriptVersion := "7.4.0"
 
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
@@ -122,12 +122,17 @@ return
 AddCustomMenus() {
     Menu, Tray, Add, , ; This empty item adds a separator
     Menu, Tray, Add, Check for updates, CheckForUpdatesFromMenu
+    Menu, Tray, Add, Open config folder, OpenConfigFolder
     Menu, Tray, Add, Version, DisplayVersion
 }
 
 ; Function to display the version information
 DisplayVersion() {
     MsgBox, MuteActiveWindow`nVersion v%ScriptVersion%
+}
+
+OpenConfigFolder() {
+    Try Run, explorer.exe "%A_ScriptDir%\Config"
 }
 
 CheckForUpdatesFromMenu() {
