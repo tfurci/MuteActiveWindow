@@ -1,1 +1,1 @@
--Force unmute CaptureDevice(Microphone) to fix auto-muting in some games that use microphone, is now executed at the same time as muting.
+- Add option to open config folder directly from system tray.

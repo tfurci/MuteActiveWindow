@@ -122,12 +122,17 @@ return
 AddCustomMenus() {
     Menu, Tray, Add, , ; This empty item adds a separator
     Menu, Tray, Add, Check for updates, CheckForUpdatesFromMenu
+    Menu, Tray, Add, Open config folder, OpenConfigFolder
     Menu, Tray, Add, Version, DisplayVersion
 }
 
 ; Function to display the version information
 DisplayVersion() {
     MsgBox, MuteActiveWindow`nVersion v%ScriptVersion%
+}
+
+OpenConfigFolder() {
+    Try Run, explorer.exe "%A_ScriptDir%\Config"
 }
 
 CheckForUpdatesFromMenu() {
