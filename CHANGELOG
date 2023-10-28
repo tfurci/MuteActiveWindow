@@ -1,1 +1,1 @@
-- Add option to open config folder directly from system tray.
+- Changed the way microphone is unmuted when using MAW with games/apps that use both Input/Output audio devices to fix unnecessary microphone pops/cuting out.
