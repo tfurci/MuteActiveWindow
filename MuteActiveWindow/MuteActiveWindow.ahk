@@ -8,7 +8,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "7.5.0"
+global ScriptVersion := "7.5.1"
 
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
@@ -41,9 +41,6 @@ ExcludedAppsFile := ConfigDir . "\ExcludedApps.txt"
 ; Define a variable to store the hotkey
 Hotkey := ""
 
-; Define a variable to store the hotkey
-Hotkey := ""
-
 ; Check if the script is running for the first time
 if (A_PriorHotkey = "") {
     ; Read the hotkey from the external file "Hotkey.txt" in the Config folder
@@ -58,30 +55,33 @@ if (A_PriorHotkey = "") {
 }
 
 RunMute:
-    ; Get the process name (EXE) of the active window
-    WinGet, processName, ProcessName, A
+    ; Check if the hotkey is being pressed
+    if (A_ThisHotkey = Hotkey) {
+        ; Get the process name (EXE) of the active window
+        WinGet, processName, ProcessName, A
 
-    ; Check if the active window's process is ApplicationFrameHost.exe
-    if (processName = "ApplicationFrameHost.exe") {
-        WindowUWP := WinExist("A")
-        ControlGetFocus, FocusedControl, ahk_id %WindowUWP%
-        ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowUWP%
-        WinGet, uwpprocess, processname, ahk_id %Hwnd%
-        WinGet, Pid, Pid, ahk_id %Hwnd%
-        if (!IsExcluded(uwpprocess, ExcludedAppsFile)) {
-            ; Run the svcl.exe command to mute/unmute the active window's .exe
-            RunWait, %ScriptDir%\svcl.exe /Switch "%uwpprocess%" /Unmute "DefaultCaptureDevice", , Hide
-        }
-    } else {
-        ; Get the .exe name of the active window
-        exeName := GetActiveWindowExe()
+        ; Check if the active window's process is ApplicationFrameHost.exe
+        if (processName = "ApplicationFrameHost.exe") {
+            WindowUWP := WinExist("A")
+            ControlGetFocus, FocusedControl, ahk_id %WindowUWP%
+            ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowUWP%
+            WinGet, uwpprocess, processname, ahk_id %Hwnd%
+            WinGet, Pid, Pid, ahk_id %Hwnd%
+            if (!IsExcluded(uwpprocess, ExcludedAppsFile)) {
+                ; Run the svcl.exe command to mute/unmute the active window's .exe
+                RunWait, %ScriptDir%\svcl.exe /Switch "%uwpprocess%" /Unmute "DefaultCaptureDevice", , Hide
+                }
+        } else {
+            ; Get the .exe name of the active window
+            exeName := GetActiveWindowExe()
 
-        ; Check if the title or exe is excluded, and skip muting if it is
-        if (!IsExcluded(exeName, ExcludedAppsFile)) {
-            ; Run the svcl.exe command to mute/unmute the active window's .exe
-            RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%" /Unmute "DefaultCaptureDevice", , Hide
+            ; Check if the title or exe is excluded, and skip muting if it is
+            if (!IsExcluded(exeName, ExcludedAppsFile)) {
+                ; Run the svcl.exe command to mute/unmute the active window's .exe
+                RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%" /Unmute "DefaultCaptureDevice", , Hide
+                }
+            }
         }
-    }
 return
 
 ; Function to check if a title or exe is in the exclusion list
