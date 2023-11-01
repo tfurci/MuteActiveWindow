@@ -1,0 +1,9 @@
+1
+
+CHANGE FIRST LINE FROM 1 to 2 IF YOU WISH TO CHANGE MUTING METHOD
+
+1 = custom maw-muter.exe 
+(open source, little bit faster when it comes to muting, doesnt mute microphone in some applications/games)
+
+2 = svcl.exe
+(closed source, works great but mutes all active instances which include microphone in some games/apps and can result in mic popping sound)

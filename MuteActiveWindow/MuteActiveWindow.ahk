@@ -8,7 +8,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "7.5.1"
+global ScriptVersion := "8.0.0"
 
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
@@ -26,6 +26,26 @@ FileReadLine, AutoUpdateEnabled, %CheckForUpdatesFile%, 1
 if (AutoUpdateEnabled = "1") {
     ; Run auto-update check if enabled
     CheckForUpdates()
+}
+
+; Check the muting method.
+CheckMutingMethod := ConfigDir . "\SelectMutingMethod.txt"
+if (FileExist(CheckMutingMethod)) {
+    FileReadLine, AutoUpdateEnabled, %CheckMutingMethod%, 1
+
+    if (AutoUpdateEnabled = "1") {
+        if (FileExist(ScriptDir . "\maw-muter.exe"))
+            mutingmethod := "maw-muter"
+        else
+            MsgBox, maw-muter.exe not found in the script directory.
+    } else {
+        if (FileExist(ScriptDir . "\svcl.exe"))
+            mutingmethod := "svcl"
+        else
+            MsgBox, svcl.exe not found in the script directory.
+    }
+} else {
+    MsgBox, File not found: %CheckMutingMethod%
 }
 
 ; Function to get the active window's .exe file name
@@ -68,20 +88,30 @@ RunMute:
             WinGet, uwpprocess, processname, ahk_id %Hwnd%
             WinGet, Pid, Pid, ahk_id %Hwnd%
             if (!IsExcluded(uwpprocess, ExcludedAppsFile)) {
-                ; Run the svcl.exe command to mute/unmute the active window's .exe
-                RunWait, %ScriptDir%\svcl.exe /Switch "%uwpprocess%" /Unmute "DefaultCaptureDevice", , Hide
+                if (mutingmethod = "svcl") {
+                    ; Run the svcl.exe command to mute/unmute the active window's .exe
+                    RunWait, %ScriptDir%\svcl.exe /Switch "%uwpprocess%" /Unmute "DefaultCaptureDevice", , Hide
+                } else if (mutingmethod = "maw-muter") {
+                    ; Run the maw-muter.exe command to mute the active window's .exe
+                    RunWait, %ScriptDir%\maw-muter.exe mute "%uwpprocess%", , Hide
                 }
+            }
         } else {
             ; Get the .exe name of the active window
             exeName := GetActiveWindowExe()
 
             ; Check if the title or exe is excluded, and skip muting if it is
             if (!IsExcluded(exeName, ExcludedAppsFile)) {
-                ; Run the svcl.exe command to mute/unmute the active window's .exe
-                RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%" /Unmute "DefaultCaptureDevice", , Hide
+                if (mutingmethod = "svcl") {
+                    ; Run the svcl.exe command to mute/unmute the active window's .exe
+                    RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%" /Unmute "DefaultCaptureDevice", , Hide
+                } else if (mutingmethod = "maw-muter") {
+                    ; Run the maw-muter.exe command to mute the active window's .exe
+                    RunWait, %ScriptDir%\maw-muter.exe mute "%exeName%", , Hide
                 }
             }
         }
+    }
 return
 
 ; Function to check if a title or exe is in the exclusion list
