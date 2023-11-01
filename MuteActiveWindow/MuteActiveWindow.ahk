@@ -8,7 +8,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "7.5.1"
+global ScriptVersion := "8.0.0"
 
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
