@@ -15,9 +15,8 @@ if not exist "%ScriptDir%%ScriptName%" (
 
 :: Check if the shortcut already exists in the startup folder
 if exist "%StartupFolder%\%ShortcutName%" (
-    echo The shortcut "%ShortcutName%" already exists in the startup folder.
-    pause
-    exit /b
+    del "%StartupFolder%\%ShortcutName%"
+    echo The existing shortcut "%ShortcutName%" has been deleted so new one can be created.
 )
 
 :: Create a symbolic link (shortcut) to the script in the startup folder
