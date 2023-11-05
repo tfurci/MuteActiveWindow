@@ -20,20 +20,24 @@ AddCustomMenus() ; Add custom menu options on script startup
 SetCustomIcon()
 
 ; Check for auto-updates with AutoUpdateCheck.txt file
-CheckForUpdatesFile := ConfigDir . "\AutoUpdateCheck.txt"
-FileReadLine, AutoUpdateEnabled, %CheckForUpdatesFile%, 1
+CheckBetaUpdates := ConfigDir . "\EnableBetaUpdates.txt"
+FileReadLine, BetaUpdateEnabled, %CheckBetaUpdates%, 1
 
 if (AutoUpdateEnabled = "1") {
     ; Run auto-update check if enabled
     CheckForUpdates()
 }
 
+; Check for beta aut-updates with EnableBetaUpdates.txt file.
+CheckForUpdatesFile := ConfigDir . "\AutoUpdateCheck.txt"
+FileReadLine, AutoUpdateEnabled, %CheckForUpdatesFile%, 1
+
 ; Check the muting method.
 CheckMutingMethod := ConfigDir . "\SelectMutingMethod.txt"
 if (FileExist(CheckMutingMethod)) {
-    FileReadLine, AutoUpdateEnabled, %CheckMutingMethod%, 1
+    FileReadLine, MutingMethodSelected, %CheckMutingMethod%, 1
 
-    if (AutoUpdateEnabled = "1") {
+    if (MutingMethodSelected = "1") {
         if (FileExist(ScriptDir . "\maw-muter.exe"))
             mutingmethod := "maw-muter"
         else
