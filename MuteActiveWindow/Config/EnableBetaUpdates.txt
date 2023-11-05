@@ -1,4 +1,4 @@
-1
+0
 
 ;Change line above to enable auto updates
 ;1=ENABLED
