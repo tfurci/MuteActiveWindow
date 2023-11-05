@@ -4,8 +4,13 @@ setlocal enabledelayedexpansion
 :: Get the directory where this batch script is located
 set "scriptDir=%~dp0"
 
-:: Set the GitHub raw URL
-set "githubRawURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/Scripts/UpdateMAW.bat"
+:: Check if the script is run with -beta argument
+set "betaFlag=%~1"
+if /i "%betaFlag%"=="-beta" (
+    set "githubRawURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/Scripts/UpdateMAW.bat"
+) else (
+    set "githubRawURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/Scripts/UpdateMAW.bat"
+)
 
 :: Change the working directory to the script's directory
 cd /d "%scriptDir%"
@@ -30,12 +35,20 @@ if errorlevel 1 (
     echo Script is different. Updating...
     move /y UpdatedMAW.bat UpdateMAW.bat
     echo Script updated successfully. Running updated script...
-    call UpdateMAW.bat
+    if /i "%betaFlag%"=="-beta" (
+        call UpdateMAW.bat -beta
+    ) else (
+        call UpdateMAW.bat
+    )
     exit /b 0
 ) else (
     echo Script is already up to date.
     del UpdatedMAW.bat
-    call UpdateMAW.bat
+    if /i "%betaFlag%"=="-beta" (
+        call UpdateMAW.bat -beta
+    ) else (
+        call UpdateMAW.bat
+    )
     exit /b 0
 )
 
