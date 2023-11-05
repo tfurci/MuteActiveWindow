@@ -20,17 +20,18 @@ AddCustomMenus() ; Add custom menu options on script startup
 SetCustomIcon()
 
 ; Check for auto-updates with AutoUpdateCheck.txt file
+global BetaUpdateEnabled
 CheckBetaUpdates := ConfigDir . "\EnableBetaUpdates.txt"
 FileReadLine, BetaUpdateEnabled, %CheckBetaUpdates%, 1
+
+; Check for beta aut-updates with EnableBetaUpdates.txt file.
+CheckForUpdatesFile := ConfigDir . "\AutoUpdateCheck.txt"
+FileReadLine, AutoUpdateEnabled, %CheckForUpdatesFile%, 1
 
 if (AutoUpdateEnabled = "1") {
     ; Run auto-update check if enabled
     CheckForUpdates()
 }
-
-; Check for beta aut-updates with EnableBetaUpdates.txt file.
-CheckForUpdatesFile := ConfigDir . "\AutoUpdateCheck.txt"
-FileReadLine, AutoUpdateEnabled, %CheckForUpdatesFile%, 1
 
 ; Check the muting method.
 CheckMutingMethod := ConfigDir . "\SelectMutingMethod.txt"
@@ -174,10 +175,21 @@ CheckForUpdatesFromMenu() {
 
 CheckForUpdates(isFromMenu := false) {
     ; Define the URL of your raw VERSION text file on GitHub
-    GitHubVersionURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/VERSION"
-    
+    GitHubStableVersionURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/VERSION"
+    GitHubBetaVersionURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/VERSION"
+
     ; Define the URL of your raw CHANGELOG text file on GitHub
-    GitHubChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/CHANGELOG"
+    GitHubStableChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/CHANGELOG"
+    GitHubBetaChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/CHANGELOG"
+
+    ; Determine the URL to use based on BetaUpdateEnabled flag
+    if (BetaUpdateEnabled = 1) {
+        GitHubVersionURL := GitHubBetaVersionURL
+        GitHubChangelogURL := GitHubBetaChangelogURL
+    } else {
+        GitHubVersionURL := GitHubStableVersionURL
+        GitHubChangelogURL := GitHubStableChangelogURL
+    }
 
     ; Define script directories
     UpdateScriptBat := A_ScriptDir . "\Scripts\BatUpdater.bat"
