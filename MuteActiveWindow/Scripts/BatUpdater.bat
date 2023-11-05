@@ -38,17 +38,6 @@ if errorlevel 1 (
     call UpdateMAW.bat
     exit /b 0
 )
-In this modified script:
-
-set "scriptDir=%~dp0" obtains the directory where the batch script is located.
-
-cd /d "%scriptDir%" changes the working directory to the script's directory before running curl.
-
-cd /d "%~dp0" restores the original working directory to where the script was executed.
-
-With these changes, the UpdatedMAW.bat will be downloaded and replaced in the same directory as the batch script.
-
-
 
 
 
