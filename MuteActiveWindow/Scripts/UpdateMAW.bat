@@ -1,8 +1,20 @@
 @echo off
 setlocal enabledelayedexpansion
 
-:: Specify the URL of the raw script on GitHub (Main Script)
-set "githubMainScriptURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/MuteActiveWindow.ahk"
+:: Read the value from custom.txt file
+set CheckCustomURL=path_to_custom.txt  ; Adjust the file path accordingly
+if exist %CheckCustomURL% (
+    set /p CustomValue=<%CheckCustomURL%
+    if !CustomValue! == 1 (
+        set "githubMainScriptURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/MuteActiveWindow.ahk"
+    ) else if !CustomValue! == 0 (
+        set "githubMainScriptURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/MuteActiveWindow.ahk"
+    )
+)
+
+if "%githubMainScriptURL%" == "" (
+    set "githubMainScriptURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/MuteActiveWindow.ahk"
+)
 
 :: Specify the root directory where the script is currently located
 set "scriptDirectory=%~dp0"
