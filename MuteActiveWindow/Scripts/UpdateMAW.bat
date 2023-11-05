@@ -3,9 +3,9 @@ setlocal enabledelayedexpansion
 
 set "betaFlag=%~1"
 if /i "%betaFlag%"=="-beta" (
-    set "githubRawURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/MuteActiveWindow.ahk"
+    set "githubMainScriptURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/MuteActiveWindow.ahk"
 ) else (
-    set "githubRawURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/MuteActiveWindow.ahk"
+    set "githubMainScriptURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/MuteActiveWindow.ahk"
 )
 
 :: Specify the root directory where the script is currently located
