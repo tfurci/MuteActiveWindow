@@ -8,7 +8,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "7.5.1"
+global ScriptVersion := "8.0.0"
 
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
@@ -20,12 +20,37 @@ AddCustomMenus() ; Add custom menu options on script startup
 SetCustomIcon()
 
 ; Check for auto-updates with AutoUpdateCheck.txt file
+global BetaUpdateEnabled
+CheckBetaUpdates := ConfigDir . "\EnableBetaUpdates.txt"
+FileReadLine, BetaUpdateEnabled, %CheckBetaUpdates%, 1
+
+; Check for beta aut-updates with EnableBetaUpdates.txt file.
 CheckForUpdatesFile := ConfigDir . "\AutoUpdateCheck.txt"
 FileReadLine, AutoUpdateEnabled, %CheckForUpdatesFile%, 1
 
 if (AutoUpdateEnabled = "1") {
     ; Run auto-update check if enabled
     CheckForUpdates()
+}
+
+; Check the muting method.
+CheckMutingMethod := ConfigDir . "\SelectMutingMethod.txt"
+if (FileExist(CheckMutingMethod)) {
+    FileReadLine, MutingMethodSelected, %CheckMutingMethod%, 1
+
+    if (MutingMethodSelected = "1") {
+        if (FileExist(ScriptDir . "\maw-muter.exe"))
+            mutingmethod := "maw-muter"
+        else
+            MsgBox, maw-muter.exe not found in the script directory.
+    } else {
+        if (FileExist(ScriptDir . "\svcl.exe"))
+            mutingmethod := "svcl"
+        else
+            MsgBox, svcl.exe not found in the script directory.
+    }
+} else {
+    MsgBox, File not found: %CheckMutingMethod%
 }
 
 ; Function to get the active window's .exe file name
@@ -68,20 +93,30 @@ RunMute:
             WinGet, uwpprocess, processname, ahk_id %Hwnd%
             WinGet, Pid, Pid, ahk_id %Hwnd%
             if (!IsExcluded(uwpprocess, ExcludedAppsFile)) {
-                ; Run the svcl.exe command to mute/unmute the active window's .exe
-                RunWait, %ScriptDir%\svcl.exe /Switch "%uwpprocess%" /Unmute "DefaultCaptureDevice", , Hide
+                if (mutingmethod = "svcl") {
+                    ; Run the svcl.exe command to mute/unmute the active window's .exe
+                    RunWait, %ScriptDir%\svcl.exe /Switch "%uwpprocess%" /Unmute "DefaultCaptureDevice", , Hide
+                } else if (mutingmethod = "maw-muter") {
+                    ; Run the maw-muter.exe command to mute the active window's .exe
+                    RunWait, %ScriptDir%\maw-muter.exe mute "%uwpprocess%", , Hide
                 }
+            }
         } else {
             ; Get the .exe name of the active window
             exeName := GetActiveWindowExe()
 
             ; Check if the title or exe is excluded, and skip muting if it is
             if (!IsExcluded(exeName, ExcludedAppsFile)) {
-                ; Run the svcl.exe command to mute/unmute the active window's .exe
-                RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%" /Unmute "DefaultCaptureDevice", , Hide
+                if (mutingmethod = "svcl") {
+                    ; Run the svcl.exe command to mute/unmute the active window's .exe
+                    RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%" /Unmute "DefaultCaptureDevice", , Hide
+                } else if (mutingmethod = "maw-muter") {
+                    ; Run the maw-muter.exe command to mute the active window's .exe
+                    RunWait, %ScriptDir%\maw-muter.exe mute "%exeName%", , Hide
                 }
             }
         }
+    }
 return
 
 ; Function to check if a title or exe is in the exclusion list
@@ -122,6 +157,7 @@ AddCustomMenus() {
     Menu, Tray, Add, , ; This empty item adds a separator
     Menu, Tray, Add, Check for updates, CheckForUpdatesFromMenu
     Menu, Tray, Add, Open config folder, OpenConfigFolder
+    Menu, Tray, Add, Change hotkey, OpenHotkeyFolder
     Menu, Tray, Add, Version, DisplayVersion
 }
 
@@ -134,16 +170,31 @@ OpenConfigFolder() {
     Try Run, explorer.exe "%A_ScriptDir%\Config"
 }
 
+OpenHotkeyFolder() {
+    Try Run, "%A_ScriptDir%\Config\Hotkey.txt"
+}
+
 CheckForUpdatesFromMenu() {
     CheckForUpdates(true) ; Pass 'true' to indicate that it's called from the menu
 }
 
 CheckForUpdates(isFromMenu := false) {
     ; Define the URL of your raw VERSION text file on GitHub
-    GitHubVersionURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/VERSION"
-    
+    GitHubStableVersionURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/VERSION"
+    GitHubBetaVersionURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/VERSION"
+
     ; Define the URL of your raw CHANGELOG text file on GitHub
-    GitHubChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/CHANGELOG"
+    GitHubStableChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/CHANGELOG"
+    GitHubBetaChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/CHANGELOG"
+
+    ; Determine the URL to use based on BetaUpdateEnabled flag
+    if (BetaUpdateEnabled = 1) {
+        GitHubVersionURL := GitHubBetaVersionURL
+        GitHubChangelogURL := GitHubBetaChangelogURL
+    } else {
+        GitHubVersionURL := GitHubStableVersionURL
+        GitHubChangelogURL := GitHubStableChangelogURL
+    }
 
     ; Define script directories
     UpdateScriptBat := A_ScriptDir . "\Scripts\BatUpdater.bat"
@@ -203,8 +254,11 @@ CheckForUpdates(isFromMenu := false) {
                 MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available.`n`nAs this is not a major update, you can update it using the script, and it will only take a second.`n`nChangelog:`n%Changelog%`n`nWould you like to run the update script?
                 IfMsgBox Yes
                 {
-                    ; Run the local UpdateScript.bat
-                    Run, %UpdateScriptBat%
+                    if (BetaUpdateEnabled = 1) {
+                        Run, %UpdateScriptBat% -beta
+                    } else {
+                        Run, %UpdateScriptBat%
+                    }
                 }
             }
         } else if (isFromMenu) {

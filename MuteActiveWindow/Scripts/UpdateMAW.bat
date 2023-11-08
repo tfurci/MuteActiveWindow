@@ -1,8 +1,12 @@
 @echo off
 setlocal enabledelayedexpansion
 
-:: Specify the URL of the raw script on GitHub (Main Script)
-set "githubMainScriptURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/MuteActiveWindow.ahk"
+set "betaFlag=%~1"
+if /i "%betaFlag%"=="-beta" (
+    set "githubMainScriptURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/MuteActiveWindow.ahk"
+) else (
+    set "githubMainScriptURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/MuteActiveWindow.ahk"
+)
 
 :: Specify the root directory where the script is currently located
 set "scriptDirectory=%~dp0"
