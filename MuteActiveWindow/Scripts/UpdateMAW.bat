@@ -38,6 +38,32 @@ if errorlevel 1 (
     echo.
 )
 
+:: Specify the full path to the maw-muter.exe file
+set "localMawMuterPath=%scriptsDirectory%\maw-muter.exe"
+
+:: Specify the URL for the latest version of maw-muter.exe on GitHub
+set "githubMawMuterURL=https://github.com/tfurci/maw-muter/releases/latest/download/maw-muter.exe"
+
+:: Check if maw-muter.exe exists in the scripts directory
+if exist "%localMawMuterPath%" (
+    echo.
+    echo Updating maw-muter.exe...
+    curl -L -o "%localMawMuterPath%.temp" "%githubMawMuterURL%"
+    
+    :: Compare the content of the downloaded maw-muter.exe file with the local file
+    fc "%localMawMuterPath%.temp" "%localMawMuterPath%" > nul
+
+    if errorlevel 1 (
+        move /y "%localMawMuterPath%.temp" "%localMawMuterPath%" > nul
+        echo maw-muter.exe updated successfully.
+    ) else (
+        echo maw-muter.exe is already on the latest version.
+        del "%localMawMuterPath%.temp"
+    )
+) else (
+    echo maw-muter.exe does not exist in the scripts directory.
+)
+
 :: Set the path to the previous folder
 set "previousFolder=..\"
 
@@ -52,7 +78,7 @@ if exist "%scriptPath%" (
     echo Running %scriptName%...
     start "" /b "%scriptPath%"
 ) else (
-    echo The script %scriptName% does not exist in the previous folder. Or is not name MuteActiveWindow.ahk
+    echo The script %scriptName% does not exist in the previous folder. Or is not named MuteActiveWindow.ahk
     pause
 )
 
