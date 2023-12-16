@@ -36,7 +36,7 @@ if '%errorlevel%' NEQ '0' (
 set "ScriptDir=%~dp0..\"    :: Navigate up one directory
 set "ScriptName=MuteActiveWindow.ahk"
 set "ShortcutName=MuteActiveWindow.lnk"
-set "StartupFolder=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
+set "StartupFolder=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\"
 
 :: Check if the script file exists in the source directory
 if not exist "%ScriptDir%%ScriptName%" (
