@@ -11,10 +11,8 @@ set "githubHomepage=https://github.com/tfurci/MuteActiveWindow"
 set "betaFlag=%~1"
 if /i "%betaFlag%"=="-beta" (
     set "githubRawURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/Scripts/UpdateMAW.bat"
-    set "githubPage=https://github.com/tfurci/MuteActiveWindow/tree/beta/MuteActiveWindow/Scripts"
 ) else (
     set "githubRawURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/Scripts/UpdateMAW.bat"
-    set "githubPage=https://github.com/tfurci/MuteActiveWindow/tree/main/MuteActiveWindow/Scripts"
 )
 
 :: Change the working directory to the script's directory
