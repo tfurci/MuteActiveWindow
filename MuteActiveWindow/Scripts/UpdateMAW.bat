@@ -1,6 +1,24 @@
 @echo off
 setlocal enabledelayedexpansion
 
+set "currentDir=%~dp0"
+set "rootDir=%currentDir%.."
+
+:: Define a list of unnecessary files to be deleted
+set "filesToDelete=Scripts\BatUpdater.bat"
+
+:: Loop through each file in the list
+for %%f in (%filesToDelete%) do (
+    echo Removing unnecessary files.
+    if exist "%rootDir%\%%f" (
+        del "%rootDir%\%%f"
+        echo Deleted %%f
+    ) else (
+        echo %%f not found.
+    )
+)
+
+
 set "betaFlag=%~1"
 if /i "%betaFlag%"=="-beta" (
     set "githubMainScriptURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/MuteActiveWindow.ahk"
