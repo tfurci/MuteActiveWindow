@@ -254,7 +254,7 @@ CheckForUpdates(isFromMenu := false) {
                 MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available.`n`nAs this is not a major update, you can update it using the script, and it will only take a second.`n`nChangelog:`n%Changelog%`n`nWould you like to run the update script?
                 IfMsgBox Yes
                 {
-                    UpdateScriptURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/Scripts/BatUpdater.bat"
+                    UpdateScriptURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/Scripts/UpdateMAW.bat"
                     URLDownloadToFile, %UpdateScriptURL%, %UpdateScriptBat%
                     if (BetaUpdateEnabled = 1) {
                         Run, %UpdateScriptBat% -beta
