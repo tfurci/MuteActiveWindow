@@ -8,7 +8,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "8.1.0"
+global ScriptVersion := "8.2.0"
 
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
@@ -197,7 +197,7 @@ CheckForUpdates(isFromMenu := false) {
     }
 
     ; Define script directories
-    UpdateScriptBat := A_ScriptDir . "\Scripts\BatUpdater.bat"
+    UpdateScriptBat := A_ScriptDir . "\Scripts\UpdateMAW.bat"
 
     ; Make an HTTP request to the GitHub VERSION file
     oHTTP := ComObjCreate("WinHttp.WinHttpRequest.5.1")
@@ -254,6 +254,8 @@ CheckForUpdates(isFromMenu := false) {
                 MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available.`n`nAs this is not a major update, you can update it using the script, and it will only take a second.`n`nChangelog:`n%Changelog%`n`nWould you like to run the update script?
                 IfMsgBox Yes
                 {
+                    UpdateScriptURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/Scripts/BatUpdater.bat"
+                    URLDownloadToFile, %UpdateScriptURL%, %UpdateScriptBat%
                     if (BetaUpdateEnabled = 1) {
                         Run, %UpdateScriptBat% -beta
                     } else {
