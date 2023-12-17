@@ -7,6 +7,21 @@ set "rootDir=%currentDir%.."
 :: Define a list of unnecessary files to be deleted
 set "filesToDelete=Scripts\BatUpdater.bat"
 
+where curl >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Auto-update cannot be performed because curl is not installed.
+    choice /C YN /M "Do you want to open github repository to manually update MAW? [Y/N]: "
+    if errorlevel 2 (
+        exit
+    )
+    if errorlevel 1 (
+        start https://github.com/tfurci/muteactivewindow
+        exit
+    )
+) else (
+    echo Starting MAW Updater script.......
+)
+
 echo.
 :: Loop through each file in the list
 for %%f in (%filesToDelete%) do (
