@@ -39,9 +39,10 @@ if (FileExist(CheckMutingMethod)) {
     FileReadLine, MutingMethodSelected, %CheckMutingMethod%, 1
 
     if (MutingMethodSelected = "1") {
-        if (FileExist(ScriptDir . "\maw-muter.exe"))
+        if (FileExist(ScriptDir . "\maw-muter.exe")) {
             mutingmethod := "maw-muter"
-        else
+            RunWait, %ScriptDir%\maw-muter.exe, , Hide
+        } else
             MsgBox, maw-muter.exe not found in the script directory.
     } else {
         if (FileExist(ScriptDir . "\svcl.exe"))
