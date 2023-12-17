@@ -188,13 +188,20 @@ CheckForUpdates(isFromMenu := false) {
     GitHubStableChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/CHANGELOG"
     GitHubBetaChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/CHANGELOG"
 
+    ; Define the URL of Updater
+    UpdateScriptStableURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/Scripts/UpdateMAW.bat"
+    UpdateScriptBetaURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/Scripts/UpdateMAW.bat"
+
     ; Determine the URL to use based on BetaUpdateEnabled flag
     if (BetaUpdateEnabled = 1) {
         GitHubVersionURL := GitHubBetaVersionURL
         GitHubChangelogURL := GitHubBetaChangelogURL
+        UpdateScriptURL := UpdateScriptBetaURL
+
     } else {
         GitHubVersionURL := GitHubStableVersionURL
         GitHubChangelogURL := GitHubStableChangelogURL
+        UpdateScriptURL := UpdateScriptStableURL
     }
 
     ; Define script directories
@@ -255,7 +262,6 @@ CheckForUpdates(isFromMenu := false) {
                 MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available.`n`nAs this is not a major update, you can update it using the script, and it will only take a second.`n`nChangelog:`n%Changelog%`n`nWould you like to run the update script?
                 IfMsgBox Yes
                 {
-                    UpdateScriptURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/Scripts/UpdateMAW.bat"
                     URLDownloadToFile, %UpdateScriptURL%, %UpdateScriptBat%
                     if (BetaUpdateEnabled = 1) {
                         Run, %UpdateScriptBat% -beta

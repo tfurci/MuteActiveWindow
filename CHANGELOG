@@ -1,7 +1,7 @@
-- Use multiple muting methods, you can change it in config folder
-- Add option to enable beta updates.
+- Move updater to .ahk script directly(1 .bat updater still exists)
+- Unnecessary files get removed with updates now.
+- maw-muter starts on script startup now to reduce first mute delay.
 
 (OLDER RELEASE)
-- Add option to open config folder directly from system tray.
-- Fixed using combos for keybind (+ and Keybind in .txt for SHIFT+ Combo)
-- Fixed script executing mute on startup/reload.
+- Use multiple muting methods, you can change it in config folder
+- Add option to enable beta updates.
