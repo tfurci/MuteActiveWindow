@@ -4,6 +4,8 @@ setlocal enabledelayedexpansion
 set "currentDir=%~dp0"
 set "rootDir=%currentDir%.."
 set "betaFlag=%~1"
+echo Starting MAW Updater (291223.01)
+echo.
 
 :: Define GitHub URLs
 set "githubRootURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow"
@@ -31,14 +33,20 @@ where curl >nul 2>&1 || (
 :: List of unnecessary files to be deleted
 set "filesToDelete=Scripts\BatUpdater.bat"
 
+set /a deletedFilesCount=0
 echo Deleting unnecessary files...
 for %%f in (%filesToDelete%) do (
     if exist "%rootDir%\%%f" (
         del "%rootDir%\%%f"
         echo Deleted %%f
+        set /a deletedFilesCount+=1
     )
 )
+if !deletedFilesCount! equ 0 (
+    echo No unnecessary files removed.
+)
 echo.
+
 
 :: Update scripts
 call :updateScript "%aesScriptPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/Scripts/AutoEnableStartup.bat"
