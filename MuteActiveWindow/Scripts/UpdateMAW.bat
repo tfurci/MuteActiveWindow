@@ -35,6 +35,35 @@ for %%f in (%filesToDelete%) do (
 )
 echo.
 
+set "betaFlag=%~1"
+if /i "%betaFlag%"=="-beta" (
+    set "githubAESScriptURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/Scripts/AutoEnableStartup.bat"
+) else (
+    set "githubAESScriptURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/Scripts/AutoEnableStartup.bat"
+)
+:: Specify the full path to the local main script file
+set "localAESScriptPath=%rootDir%\Scripts\AutoEnableStartup.bat"
+
+:: Ensure that the local "Scripts" directory exists
+md "%rootDir%" 2>nul
+
+:: Download and update the main script from GitHub
+curl -k -o "%localAESScriptPath%.temp" "%githubAESScriptURL%"
+
+:: Compare the content of the downloaded main script file with the local file
+fc "%localAESScriptPath%.temp" "%localAESScriptPath%" > nul
+
+if errorlevel 1 (
+    echo.
+    echo AutoEnableStartup script downloaded and updated.
+    move /y "%localAESScriptPath%.temp" "%localAESScriptPath%" > nul
+    echo.
+) else (
+    echo.
+    echo AutoEnableStartup script is already on the latest version.
+    del "%localAESScriptPath%.temp"
+    echo.
+)
 
 set "betaFlag=%~1"
 if /i "%betaFlag%"=="-beta" (
