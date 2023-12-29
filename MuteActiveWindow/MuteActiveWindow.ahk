@@ -8,7 +8,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "8.1.0"
+global ScriptVersion := "8.2.0"
 
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
@@ -39,9 +39,10 @@ if (FileExist(CheckMutingMethod)) {
     FileReadLine, MutingMethodSelected, %CheckMutingMethod%, 1
 
     if (MutingMethodSelected = "1") {
-        if (FileExist(ScriptDir . "\maw-muter.exe"))
+        if (FileExist(ScriptDir . "\maw-muter.exe")) {
             mutingmethod := "maw-muter"
-        else
+            RunWait, %ScriptDir%\maw-muter.exe, , Hide
+        } else
             MsgBox, maw-muter.exe not found in the script directory.
     } else {
         if (FileExist(ScriptDir . "\svcl.exe"))
@@ -187,17 +188,24 @@ CheckForUpdates(isFromMenu := false) {
     GitHubStableChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/CHANGELOG"
     GitHubBetaChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/CHANGELOG"
 
+    ; Define the URL of Updater
+    UpdateScriptStableURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/Scripts/UpdateMAW.bat"
+    UpdateScriptBetaURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/Scripts/UpdateMAW.bat"
+
     ; Determine the URL to use based on BetaUpdateEnabled flag
     if (BetaUpdateEnabled = 1) {
         GitHubVersionURL := GitHubBetaVersionURL
         GitHubChangelogURL := GitHubBetaChangelogURL
+        UpdateScriptURL := UpdateScriptBetaURL
+
     } else {
         GitHubVersionURL := GitHubStableVersionURL
         GitHubChangelogURL := GitHubStableChangelogURL
+        UpdateScriptURL := UpdateScriptStableURL
     }
 
     ; Define script directories
-    UpdateScriptBat := A_ScriptDir . "\Scripts\BatUpdater.bat"
+    UpdateScriptBat := A_ScriptDir . "\Scripts\UpdateMAW.bat"
 
     ; Make an HTTP request to the GitHub VERSION file
     oHTTP := ComObjCreate("WinHttp.WinHttpRequest.5.1")
@@ -254,6 +262,7 @@ CheckForUpdates(isFromMenu := false) {
                 MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available.`n`nAs this is not a major update, you can update it using the script, and it will only take a second.`n`nChangelog:`n%Changelog%`n`nWould you like to run the update script?
                 IfMsgBox Yes
                 {
+                    URLDownloadToFile, %UpdateScriptURL%, %UpdateScriptBat%
                     if (BetaUpdateEnabled = 1) {
                         Run, %UpdateScriptBat% -beta
                     } else {
