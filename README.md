@@ -15,7 +15,6 @@ This script was inspired by [kristoffer-tvera/mute-current-application](https://
 
 - [Prerequisites](#prerequisites)
   - [Required Tools](#required-tools)
-  - [Additional File (Included in .rar release)](#additional-file-included-in-rar-release)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Customize Hotkey](#customize-hotkey)
@@ -37,17 +36,17 @@ Before using this script, make sure you have the required tools and files in pla
 
 - [AutoHotkey](https://www.autohotkey.com/)(v1.x): If not already installed, download and install AutoHotkey to run the script.
 
-### Additional File (Included in .rar release)
-
-- Download the `svcl.exe`(64 bit) tool from [here](https://www.nirsoft.net/utils/sound_volume_command_line.html) or [direct link](https://www.nirsoft.net/utils/svcl-x64.zip) and place it in the same directory as the AutoHotkey script (`MuteActiveWindow.ahk`).
-
 ## Installation
 
 Follow these steps to set up the script:
 
 1. Clone or download this repository to your computer.
 
-2. If there is no svcl in directory place the `svcl.exe` tool in the same directory as the AutoHotkey script (`MuteActiveWindow.ahk`).
+2. Install AutoHotkey
+
+3. Start `MuteActiveWindow.ahk`
+
+4. if you downloaded `NO-EXE` version also download muting method of your choice: [MAW-MUTER](https://github.com/tfurci/maw-muter/releases)(default) or [SVCL](https://www.nirsoft.net/utils/sound_volume_command_line.html)
 
 ## Usage
 
@@ -55,7 +54,7 @@ To mute the active window, use the predefined hotkey (you can customize it in th
 
 ## Customize Hotkey
 
-Change the hotkey by editing the "Hotkey.txt" file (located in the /Config directory) and replacing its contents with your desired hotkey (e.g., "F10").
+Change the hotkey by editing the `Hotkey.txt` file (located in the `/Config/Hotkey.txt` directory) and replacing its contents with your desired hotkey (e.g., `F10`).
 
 ## Adding Exclusions
 
@@ -64,7 +63,7 @@ You can configure the script to exclude specific applications from being muted. 
 1. Open the `ExcludedApps.txt` file located in the "Config" folder.
 
 2. Add the exe's of the applications you want to exclude, each on a separate line, in the following format:
-   You can get UWP exe's with this script from uwp-exe branch [link](https://github.com/tfurci/MuteActiveWindow/blob/uwp-exe/MuteActiveWindow/MAW-EXE.ahk) or use CTRL+ALT+P hotkey (on MAW v7.1.0+)
+   You can the app's exe with CTRL+ALT+P hotkey (on MAW v7.1.0+)
 
    - For executable files and UWP apps (e.g., Brave.exe, WinStore.App.exe):
      ```
@@ -78,19 +77,7 @@ You can configure the script to exclude specific applications from being muted. 
 
 Now, the specified applications will be excluded from the script's muting behavior.
 
-**Examples:**
-
-Suppose you want to exclude Brave (`Brave.exe`) and Xbox (`Xbox`) from being muted. Your `ExcludedApps.txt` file would look like this:
-
-```
-Brave.exe
-XboxPCApp.exe
-```
-This will ensure that the script doesn't mute Brave.exe and Xbox when the hotkey is pressed.
-
 ## Running the Script at Startup
-
-You can choose to run the script at startup either automatically or manually.
 
 ### Automatic Startup
 
@@ -109,20 +96,12 @@ Now, the script will run automatically each time you start Windows without the n
 Now, the script will run automatically each time you start Windows.
 
 ## Updating Your Script and Pairs
-
-Updating your MuteActiveWindow script or custom executable pairs is now even more convenient with the latest v5.0.0 update:
-
 ### Automatic Updates
 The script will now automatically check for updates on startup, unless you've explicitly disabled this feature in the `Config/AutoUpdateCheck.txt` file.
 
+You can check for updates using the taskbar right click menu even with Auto-Updates disabled.
+
 ### Manual Updates
-You have two options for manual updates:
-
-#### Option 1: Right-Click on Taskbar Icon
-1. Right-click on the MuteActiveWindow taskbar icon.
-2. Select "Check for updates" from the menu.
-
-#### Option 2: Download from GitHub
 1. Visit the [MuteActiveWindow GitHub repository](https://github.com/tfurci/MuteActiveWindow).
 2. Navigate to the "Releases" section.
 3. Download the latest version of the script.
