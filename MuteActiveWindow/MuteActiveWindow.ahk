@@ -2,21 +2,26 @@
 #SingleInstance
 F1::
 {
+    global TrueWindow := 0
     activeWin := WinActive("A") ; Get the active window
-    TrueWindow := 0 ; Initialize TrueWindow
-    if WinGetProcessName(activeWin) == "ApplicationFrameHost.exe" {
+    processName := WinGetProcessName(activeWin)
+    MsgBox processName
+    if (processName == "ApplicationFrameHost.exe") {
         DllCall("EnumChildWindows", "ptr", activeWin, "ptr", CallbackCreate(EnumChildWindows, "F"), "uint", 0)
         if (TrueWindow) {
-            processName := WinGetProcessName("ahk_id " . TrueWindow)
-            MsgBox processName
+            uwpprocess := WinGetProcessName("ahk_id " . TrueWindow)
+            MsgBox uwpprocess
         }
+    } else {
+        MsgBox processName
     }
+}
 
-    EnumChildWindows(hwnd) {
-        if WinGetProcessName(hwnd) != "ApplicationFrameHost.exe" {
-            TrueWindow := hwnd
-            return false
-        }
-        return true
+EnumChildWindows(hwnd) {
+    global TrueWindow
+    if WinGetProcessName(hwnd) != "ApplicationFrameHost.exe" {
+        TrueWindow := hwnd
+        return false
     }
+    return true
 }
