@@ -1,1 +1,7 @@
--Force unmute CaptureDevice(Microphone) to fix auto-muting in some games that use microphone, is now executed at the same time as muting.
+- Move updater to .ahk script directly(1 .bat updater still exists)
+- Unnecessary files get removed with updates now.
+- maw-muter starts on script startup now to reduce first mute delay.
+
+(OLDER RELEASE)
+- Use multiple muting methods, you can change it in config folder
+- Add option to enable beta updates.

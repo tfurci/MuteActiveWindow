@@ -1,55 +1,85 @@
 @echo off
 setlocal enabledelayedexpansion
 
-:: Specify the URL of the raw script on GitHub (Main Script)
-set "githubMainScriptURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/MuteActiveWindow.ahk"
+set "currentDir=%~dp0"
+set "rootDir=%currentDir%.."
+set "betaFlag=%~1"
+echo Starting MAW Updater (291223.01)
+echo.
 
-:: Specify the root directory where the script is currently located
-set "scriptDirectory=%~dp0"
-
-:: Specify the "Scripts" directory relative to the script directory
-set "scriptsDirectory=%scriptDirectory%.."
-
-:: Specify the full path to the local main script file
-set "localMainScriptPath=%scriptsDirectory%\MuteActiveWindow.ahk"
-
-:: Ensure that the local "Scripts" directory exists
-md "%scriptsDirectory%" 2>nul
-
-:: Download and update the main script from GitHub
-curl -k -o "%localMainScriptPath%.temp" "%githubMainScriptURL%"
-
-:: Compare the content of the downloaded main script file with the local file
-fc "%localMainScriptPath%.temp" "%localMainScriptPath%" > nul
-
-if errorlevel 1 (
-    echo.
-    echo Main script downloaded and updated.
-    move /y "%localMainScriptPath%.temp" "%localMainScriptPath%" > nul
-    echo.
+:: Define GitHub URLs
+set "githubRootURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow"
+:: Check if the beta flag is used and set the GitHub branch accordingly
+if /i "%betaFlag%"=="-beta" (
+    set "githubBranch=/beta"
 ) else (
-    echo.
-    echo Main script is already on the latest version.
-    del "%localMainScriptPath%.temp"
-    echo.
+    set "githubBranch=/main"
 )
 
-:: Set the path to the previous folder
-set "previousFolder=..\"
 
-:: Set the name of the AutoHotkey script
-set "scriptName=MuteActiveWindow.ahk"
+:: Define file paths
+set "aesScriptPath=%rootDir%\Scripts\AutoEnableStartup.bat"
+set "mainScriptPath=%rootDir%\MuteActiveWindow.ahk"
+set "mawMuterPath=%rootDir%\maw-muter.exe"
 
-:: Combine the path and script name to create the full path to the script
-set "scriptPath=%previousFolder%%scriptName%"
-
-:: Check if the script file exists
-if exist "%scriptPath%" (
-    echo Running %scriptName%...
-    start "" /b "%scriptPath%"
-) else (
-    echo The script %scriptName% does not exist in the previous folder. Or is not name MuteActiveWindow.ahk
-    pause
+:: Check for curl installation
+where curl >nul 2>&1 || (
+    echo Auto-update cannot be performed because curl is not installed.
+    choice /C YN /M "Do you want to open GitHub repository for manual update? [Y/N]: "
+    if not errorlevel 2 start https://github.com/tfurci/muteactivewindow
+    exit
 )
 
+:: List of unnecessary files to be deleted
+set "filesToDelete=Scripts\BatUpdater.bat"
+
+set /a deletedFilesCount=0
+echo Deleting unnecessary files...
+for %%f in (%filesToDelete%) do (
+    if exist "%rootDir%\%%f" (
+        del "%rootDir%\%%f"
+        echo Deleted %%f
+        set /a deletedFilesCount+=1
+    )
+)
+if !deletedFilesCount! equ 0 (
+    echo No unnecessary files removed.
+)
+echo.
+
+
+:: Update scripts
+call :updateScript "%aesScriptPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/Scripts/AutoEnableStartup.bat"
+echo.
+call :updateScript "%mainScriptPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/MuteActiveWindow.ahk"
+echo.
+call :updateScript "%mawMuterPath%" "https://github.com/tfurci/maw-muter/releases/latest/download/maw-muter.exe"
+echo.
+
+:: Run the main script
+if exist "%mainScriptPath%" (
+    echo Running MuteActiveWindow...
+    start "" /b "%mainScriptPath%"
+    echo.
+) else (
+    echo MuteActiveWindow.ahk not found.
+    echo.
+)
 pause
+exit
+
+:updateScript
+set "localPath=%~1"
+set "url=%~2"
+echo Updating %~nx1...
+
+curl -L -k -o "%localPath%.temp" "%url%"
+fc "%localPath%.temp" "%localPath%" > nul
+if errorlevel 1 (
+    move /y "%localPath%.temp" "%localPath%" > nul
+    echo Updated %~nx1.
+) else (
+    del "%localPath%.temp"
+    echo %~nx1 is already up to date.
+)
+goto :eof
