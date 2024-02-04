@@ -10,7 +10,7 @@ echo ========================
 echo  MuteActiveWindow config
 echo ========================
 echo  1. Change Keybind
-echo  2. Option 2
+echo  2. Change Muting Method
 echo  3. Option 3
 echo  4. Option 4
 echo  5. Option 5
@@ -21,7 +21,7 @@ set /p choice=Enter your choice (0-5):
 if "%choice%"=="1" (
     goto runupdatehotkey
 ) else if "%choice%"=="2" (
-    goto test2
+    goto runupdatemutingmethod
 ) else if "%choice%"=="3" (
     goto test3
 ) else if "%choice%"=="4" (
@@ -66,7 +66,7 @@ echo Hotkey has been updated to: %newHotkey%
 pause
 goto menu
 
-:test2
+:runupdatemutingmethod
 rem Test 2 code here
 echo Running script for Option 2
 rem Add your script/command for Option 2 here

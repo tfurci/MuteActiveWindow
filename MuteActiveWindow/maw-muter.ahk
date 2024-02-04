@@ -1,19 +1,22 @@
 ; MAW-MUTER.ahk (Credits: VA.ahk() & mute_current_application())
 
-; Function to toggle mute state of a specific process
 MAWAHK(ProcessName) {
-    if !(Volume := GetVolumeObject(ProcessName))
+    if !(Volume := GetVolumeObject(ProcessName)) {
         MsgBox, There was a problem retrieving the application volume interface
+        return
+    }
+    
+    VA_ISimpleAudioVolume_GetMute(Volume, Mute)  ;Get mute state
+    ; MsgBox % "Application " ProcessName " is currently " (Mute ? "muted" : "not muted")
+    VA_ISimpleAudioVolume_SetMute(Volume, !Mute) ;Toggle mute state
+    ObjRelease(Volume)
+    return
 }
 
-;Required for app specific mute
-GetVolumeObject(ProcessName) {
+GetVolumeObject(targetExeName) {
     static IID_IASM2 := "{77AA99A0-1BD6-484F-8BC7-2C654C9A9B6F}"
     , IID_IASC2 := "{bfb7ff88-7239-4fc9-8fa2-07c950be9c6d}"
     , IID_ISAV := "{87CE5498-68D6-44E5-9215-6DA47EF883D8}"
-
-    ; Initialize an array to store ISAV objects
-    ISAVArray := []
 
     ; Get all audio devices
     Loop, 10 ; Change the loop limit based on the number of audio devices you have
@@ -21,36 +24,56 @@ GetVolumeObject(ProcessName) {
         DAE := VA_GetDevice(A_Index)
         if (DAE)
         {
-            ; Activate the session manager
-            VA_IMMDevice_Activate(DAE, IID_IASM2, 0, 0, IASM2)
+            ; Check if the device is active and a rendering endpoint
+            VA_IMMDevice_GetState(DAE, State)
+            VA_IConnector_GetDataFlow(DAE, DataFlow)
 
-            ; Enumerate sessions for the current device
-            VA_IAudioSessionManager2_GetSessionEnumerator(IASM2, IASE)
-            VA_IAudioSessionEnumerator_GetCount(IASE, Count)
-
-            ; Search for all instances of the specified process name for the current device
-            Loop, % Count
+            if (State == 1 && DataFlow == 0)  ; Check if the device is active and rendering
             {
-                VA_IAudioSessionEnumerator_GetSession(IASE, A_Index-1, IASC)
-                IASC2 := ComObjQuery(IASC, IID_IASC2)
+                ; Activate the session manager
+                VA_IMMDevice_Activate(DAE, IID_IASM2, 0, 0, IASM2)
 
-                ; If IAudioSessionControl2 is queried successfully
-                if (IASC2)
+                ; Enumerate sessions for the current device
+                VA_IAudioSessionManager2_GetSessionEnumerator(IASM2, IASE)
+                VA_IAudioSessionEnumerator_GetCount(IASE, Count)
+
+                ; Search for an audio session with the required name for the current device
+                Loop, % Count
                 {
-                    VA_IAudioSessionControl2_GetProcessID(IASC2, SPID)
-                    ProcessNameFromPID := GetProcessNameFromPID(SPID)
+                    VA_IAudioSessionEnumerator_GetSession(IASE, A_Index-1, IASC)
+                    IASC2 := ComObjQuery(IASC, IID_IASC2)
 
-                    ; If the process name matches the one we are looking for
-                    if (ProcessNameFromPID == ProcessName)
+                    ; If IAudioSessionControl2 is queried successfully
+                    if (IASC2)
                     {
-                        ISAV := ComObjQuery(IASC2, IID_ISAV)
-                        ISAVArray.Insert(ISAV)
+                        VA_IAudioSessionControl2_GetProcessID(IASC2, SPID)
+                        ProcessNameFromPID := GetProcessNameFromPID(SPID)
+
+                        ; If the process name matches the one we are looking for
+                        if (ProcessNameFromPID == targetExeName)
+                        {
+                            ; Check if the session is active before retrieving volume interface
+                            VA_IAudioSessionControl_GetState(IASC2, SessionState)
+                            if (SessionState == 1) ; AudioSessionStateActive
+                            {
+                                ISAV := ComObjQuery(IASC2, IID_ISAV)
+                                if (ISAV)
+                                {
+                                    return ISAV ;
+                                }
+                                else
+                                {
+                                    return
+                                }
+                            }
+                            ObjRelease(IASC2)
+                        }
+
+                        ObjRelease(IASC2)
                     }
 
-                    ObjRelease(IASC2)
+                    ObjRelease(IASC)
                 }
-
-                ObjRelease(IASC)
             }
 
             ObjRelease(IASE)
@@ -59,15 +82,8 @@ GetVolumeObject(ProcessName) {
         }
     }
 
-    ; Mute all found instances
-    Loop, % ISAVArray.Length()
-    {
-        VA_ISimpleAudioVolume_GetMute(ISAVArray[1], Mute)
-        VA_ISimpleAudioVolume_SetMute(ISAVArray[A_Index-1], !Mute)
-        ObjRelease(ISAVArray[A_Index-1])
-    }
-
-    return ISAVArray  ; Return the array of ISAV objects
+    ; MsgBox No active audio session found for the specified process: %targetExeName%
+    return ; Return 0 if there's an issue retrieving the interface
 }
 
 GetProcessNameFromPID(PID)
@@ -96,10 +112,6 @@ VA_ISimpleAudioVolume_GetMute(this, ByRef Muted) {
 }
 
 
-; VA.ahk script down bellow:
-
-; VA v2.4
-
 ;
 ; MASTER CONTROLS
 ;
@@ -120,19 +132,18 @@ VA_SetMasterVolume(vol, channel="", device_desc="playback")
 {
     vol := vol>100 ? 100 : vol<0 ? 0 : vol
     if ! aev := VA_GetAudioEndpointVolume(device_desc)
-        return -1
+        return
     if channel =
-        result := VA_IAudioEndpointVolume_SetMasterVolumeLevelScalar(aev, vol/100)
+        VA_IAudioEndpointVolume_SetMasterVolumeLevelScalar(aev, vol/100)
     else
-        result := VA_IAudioEndpointVolume_SetChannelVolumeLevelScalar(aev, channel-1, vol/100)
+        VA_IAudioEndpointVolume_SetChannelVolumeLevelScalar(aev, channel-1, vol/100)
     ObjRelease(aev)
-    return result
 }
 
 VA_GetMasterChannelCount(device_desc="playback")
 {
     if ! aev := VA_GetAudioEndpointVolume(device_desc)
-        return -1
+        return
     VA_IAudioEndpointVolume_GetChannelCount(aev, count)
     ObjRelease(aev)
     return count
@@ -141,16 +152,15 @@ VA_GetMasterChannelCount(device_desc="playback")
 VA_SetMasterMute(mute, device_desc="playback")
 {
     if ! aev := VA_GetAudioEndpointVolume(device_desc)
-        return -1
-    result := VA_IAudioEndpointVolume_SetMute(aev, mute)
+        return
+    VA_IAudioEndpointVolume_SetMute(aev, mute)
     ObjRelease(aev)
-    return result
 }
 
 VA_GetMasterMute(device_desc="playback")
 {
     if ! aev := VA_GetAudioEndpointVolume(device_desc)
-        return -1
+        return
     VA_IAudioEndpointVolume_GetMute(aev, mute)
     ObjRelease(aev)
     return mute
@@ -323,6 +333,7 @@ VA_FindSubunit(device, target_desc, target_iid)
         target_name := "i)" target_name
     r := VA_EnumSubunits(device, "VA_FindSubunitCallback", target_name, target_iid
             , Object(0, target_index ? target_index : 1, 1, 0))
+    DllCall("GlobalFree", "uint", callback)
     return r
 }
 
@@ -346,7 +357,7 @@ VA_EnumSubunits(device, callback, target_name="", target_iid="", callback_param=
     ObjRelease(conn)
     if !conn_to
         return ; blank to indicate error
-    part := ComObjQuery(conn_to, "{AE2DE0E4-5BCA-4F2D-AA46-5D13F8FDB3A9}") ; IID_IPart
+    DllCall(NumGet(NumGet(conn_to+0)), "ptr", conn_to, "ptr", VA_GUID(IID_IPart,"{AE2DE0E4-5BCA-4F2D-AA46-5D13F8FDB3A9}"), "ptr*", part) != 0 ? part:=0 : ""
     ObjRelease(conn_to)
     if !part
         return
@@ -360,7 +371,7 @@ VA_EnumSubunitsEx(part, data_flow, callback, target_name="", target_iid="", call
     r := 0
     
     VA_IPart_GetPartType(part, type)
-   
+    
     if type = 1 ; Subunit
     {
         VA_IPart_GetName(part, name)
@@ -406,60 +417,60 @@ VA_EnumSubunitsEx(part, data_flow, callback, target_name="", target_iid="", call
 ;               | ( friendly_name | 'playback' | 'capture' ) [ ':' index ]
 VA_GetDevice(device_desc="playback")
 {
-    static CLSID_MMDeviceEnumerator := "{BCDE0395-E52F-467C-8E3D-C4579291692E}"
-        , IID_IMMDeviceEnumerator := "{A95664D2-9614-4F35-A746-DE8DB63617E6}"
-    if !(deviceEnumerator := ComObjCreate(CLSID_MMDeviceEnumerator, IID_IMMDeviceEnumerator))
+    if ( r:= DllCall("ole32\CoCreateInstance"
+                , "ptr", VA_GUID(CLSID_MMDeviceEnumerator, "{BCDE0395-E52F-467C-8E3D-C4579291692E}")
+                , "ptr", 0, "uint", 21
+                , "ptr", VA_GUID(IID_IMMDeviceEnumerator, "{A95664D2-9614-4F35-A746-DE8DB63617E6}")
+                , "ptr*", deviceEnumerator)) != 0
         return 0
     
     device := 0
     
-    if VA_IMMDeviceEnumerator_GetDevice(deviceEnumerator, device_desc, device) = 0
+    ; deviceEnumerator->GetDevice(device_id, [out] device)
+    if DllCall(NumGet(NumGet(deviceEnumerator+0)+5*A_PtrSize), "ptr", deviceEnumerator, "wstr", device_desc, "ptr*", device) = 0
         goto VA_GetDevice_Return
     
     if device_desc is integer
     {
-        m3 := device_desc
-        if m3 >= 4096 ; Probably a device pointer, passed here indirectly via VA_GetAudioMeter or such.
-        {
-            ObjAddRef(device := m3)
-            goto VA_GetDevice_Return
-        }
+        m2 := device_desc
+        if m2 >= 4096 ; Probably a device pointer, passed here indirectly via VA_GetAudioMeter or such.
+            return m2, ObjAddRef(m2)
     }
     else
-        RegExMatch(device_desc, "(.*?)\s*(?::(capture|playback))?(?::(\d+))?$", m)
+        RegExMatch(device_desc, "(.*?)\s*(?::(\d+))?$", m)
     
     if m1 in playback,p
         m1 := "", flow := 0 ; eRender
     else if m1 in capture,c
         m1 := "", flow := 1 ; eCapture
-    else if m2 in playback
-        flow := 0 ; eRender
-    else if m2 in capture
-        flow := 1 ; eCapture
-    else if (m1 . m3) = ""  ; no name or number specified
+    else if (m1 . m2) = ""  ; no name or number specified
         m1 := "", flow := 0 ; eRender (default)
     else
         flow := 2 ; eAll
     
-    if (m1 . m3) = ""   ; no name or number (maybe "playback" or "capture")
-    {
-        VA_IMMDeviceEnumerator_GetDefaultAudioEndpoint(deviceEnumerator, flow, 0, device)
+    if (m1 . m2) = ""   ; no name or number (maybe "playback" or "capture")
+    {   ; deviceEnumerator->GetDefaultAudioEndpoint(dataFlow, role, [out] device)
+        DllCall(NumGet(NumGet(deviceEnumerator+0)+4*A_PtrSize), "ptr",deviceEnumerator, "uint",flow, "uint",0, "ptr*",device)
         goto VA_GetDevice_Return
     }
 
-    VA_IMMDeviceEnumerator_EnumAudioEndpoints(deviceEnumerator, flow, 1, devices)
+    ; deviceEnumerator->EnumAudioEndpoints(dataFlow, stateMask, [out] devices)
+    DllCall(NumGet(NumGet(deviceEnumerator+0)+3*A_PtrSize), "ptr",deviceEnumerator, "uint",flow, "uint",1, "ptr*",devices)
+    
+    ; devices->GetCount([out] count)
+    DllCall(NumGet(NumGet(devices+0)+3*A_PtrSize), "ptr",devices, "uint*",count)
     
     if m1 =
-    {
-        VA_IMMDeviceCollection_Item(devices, m3-1, device)
+    {   ; devices->Item(m2-1, [out] device)
+        DllCall(NumGet(NumGet(devices+0)+4*A_PtrSize), "ptr",devices, "uint",m2-1, "ptr*",device)
         goto VA_GetDevice_Return
     }
     
-    VA_IMMDeviceCollection_GetCount(devices, count)
     index := 0
     Loop % count
-        if VA_IMMDeviceCollection_Item(devices, A_Index-1, device) = 0
-            if InStr(VA_GetDeviceName(device), m1) && (m3 = "" || ++index = m3)
+        ; devices->Item(A_Index-1, [out] device)
+        if DllCall(NumGet(NumGet(devices+0)+4*A_PtrSize), "ptr",devices, "uint",A_Index-1, "ptr*",device) = 0
+            if InStr(VA_GetDeviceName(device), m1) && (m2 = "" || ++index = m2)
                 goto VA_GetDevice_Return
             else
                 ObjRelease(device), device:=0
@@ -488,39 +499,6 @@ VA_GetDeviceName(device)
     return deviceName
 }
 
-VA_SetDefaultEndpoint(device_desc, role)
-{
-    /* Roles:
-         eConsole        = 0  ; Default Device
-         eMultimedia     = 1
-         eCommunications = 2  ; Default Communications Device
-    */
-    if ! device := VA_GetDevice(device_desc)
-        return 0
-    if VA_IMMDevice_GetId(device, id) = 0
-    {
-        cfg := ComObjCreate("{294935CE-F637-4E7C-A41B-AB255460B862}"
-                          , "{568b9108-44bf-40b4-9006-86afe5b5a620}")
-        hr := VA_xIPolicyConfigVista_SetDefaultEndpoint(cfg, id, role)
-        ObjRelease(cfg)
-    }
-    ObjRelease(device)
-    return hr = 0
-}
-
-; Returns a list of all devices that match the device_desc
-VA_GetDeviceList(device_desc:="playback")
-{
-    devicesList:= Array()
-    Loop {
-        device:= VA_GetDevice(device_desc ":" . A_Index)
-        if(!device)
-            break
-        devicesList.push(VA_GetDeviceName(device))
-        ObjRelease(device)
-    }
-    return devicesList
-}
 
 ;
 ; HELPERS
@@ -560,196 +538,6 @@ VA_Scalar2dB(s, min_dB, max_dB) {
     return log((max_s-min_s)*s+min_s)*20
 }
 
-;
-; Callback creation functions.
-;
-
-; Registers a callback function for an audio device
-VA_CreateAudioEndpointCallback(callback_func:= "", device_desc:="playback")
-{
-    if ! aev := VA_GetAudioEndpointVolume(device_desc)
-        return
-    if ! aev_cb := VA_IAudioEndpointVolumeCallback_Create(aev)
-        return
-    VA_MapAudioEndpointCallbackFunc(aev_cb, callback_func)
-    VA_IAudioEndpointVolume_RegisterControlChangeNotify(aev,aev_cb)
-    return aev_cb
-}
-
-VA_ReleaseAudioEndpointCallback(aev, aev_cb)
-{
-    global VA_IAudioEndpointVolumeCallbacks
-    VA_IAudioEndpointVolumeCallbacks[aev_cb]:= ""
-    VA_IAudioEndpointVolume_UnregisterControlChangeNotify(aev,aev_cb)
-    ObjRelease(aev_cb)
-}
-
-VA_MapAudioEndpointCallbackFunc(aev_cb, func)
-{
-    global VA_IAudioEndpointVolumeCallbacks
-    if(!VA_IAudioEndpointVolumeCallbacks)
-        VA_IAudioEndpointVolumeCallbacks:= Array()
-    if (fn:=Func(func)) ; if func is function name
-        VA_IAudioEndpointVolumeCallbacks[aev_cb]:= fn
-    else if(isObject(func)) ; if func is func object
-        VA_IAudioEndpointVolumeCallbacks[aev_cb]:= func
-}
-
-;
-;IAudioEndpointVolumeCallback functions' implementation
-;
-
-VA_IAudioEndpointVolumeCallback_Create(aev)
-{
-   static VTBL := [ "QueryInterface"
-                  , "AddRef"
-                  , "Release"
-                  , "OnNotify" ]
-                  
-        , heapSize := A_PtrSize*10
-        , heapOffset := A_PtrSize*9
-        
-        , flags := (HEAP_GENERATE_EXCEPTIONS := 0x4) | (HEAP_NO_SERIALIZE := 0x1)
-        , HEAP_ZERO_MEMORY := 0x8
-   
-   hHeap := DllCall("HeapCreate", "UInt", flags, "Ptr", 0, "Ptr", 0, "Ptr")
-   addr := IAudioEndpointVolumeCallback := DllCall("HeapAlloc", "Ptr", hHeap, "UInt", HEAP_ZERO_MEMORY, "Ptr", heapSize, "Ptr")
-   addr := NumPut(addr + A_PtrSize, addr + 0)
-   for k, v in VTBL
-      addr := NumPut( VA_RegisterSyncCallback("VA_IAudioEndpointVolumeCallback_" . v), addr + 0 )
-   NumPut(hHeap, IAudioEndpointVolumeCallback + heapOffset)
-   return IAudioEndpointVolumeCallback
-}
-
-VA_IAudioEndpointVolumeCallback_QueryInterface(this, id, pObject)
-{
-    return 0
-}
-
-VA_IAudioEndpointVolumeCallback_AddRef(this)
-{
-   static refOffset := A_PtrSize*8
-   NumPut(refCount := NumGet(this + refOffset, "UInt") + 1, this + refOffset, "UInt")
-   return refCount
-}
-
-VA_IAudioEndpointVolumeCallback_Release(this)
-{
-   static refOffset := A_PtrSize*8
-        , heapOffset := A_PtrSize*9
-   NumPut(refCount := NumGet(this + refOffset, "UInt") - 1, this + refOffset, "UInt")
-   if (refCount = 0) {
-      hHeap := NumGet(this + heapOffset)
-      DllCall("HeapDestroy", "Ptr", hHeap)
-   }
-   return refCount
-}
-
-VA_IAudioEndpointVolumeCallback_OnNotify(this, pNotify)
-{
-    timer := Func("VA_IAudioEndpointVolumeCallback_CallFunc").Bind(this, pNotify)
-    Try SetTimer, % timer, -10
-    return 0
-}
-
-VA_IAudioEndpointVolumeCallback_CallFunc(this, pNotify)
-{
-    global VA_IAudioEndpointVolumeCallbacks
-    if(func:= VA_IAudioEndpointVolumeCallbacks[this]){
-        notifyObj:= { GUID: StrGet(&pNotify, "UTF-16")
-                    , Muted: NumGet(pNotify + 16, "UInt")+0
-                    , MasterVolume: NumGet(pNotify + 20, "Float")+0
-                    , Channels: NumGet(pNotify + 24, "UInt")+0}
-        func.Call(notifyObj)
-    }
-}
-
-; RegisterSyncCallback() by lexikos : https://www.autohotkey.com/boards/viewtopic.php?t=21223
-VA_RegisterSyncCallback(FunctionName, Options:="", ParamCount:="")
-{
-    if !(fn := Func(FunctionName)) || fn.IsBuiltIn
-        throw Exception("Bad function", -1, FunctionName)
-    if (ParamCount == "")
-        ParamCount := fn.MinParams
-    if (ParamCount > fn.MaxParams && !fn.IsVariadic || ParamCount+0 < fn.MinParams)
-        throw Exception("Bad param count", -1, ParamCount)
-    
-    static sHwnd := 0, sMsg, sSendMessageW
-    if !sHwnd
-    {
-        Gui VA_RegisterSyncCallback: +Parent%A_ScriptHwnd% +hwndsHwnd
-        OnMessage(sMsg := 0x8000, Func("VA_RegisterSyncCallback_Msg"))
-        sSendMessageW := DllCall("GetProcAddress", "ptr", DllCall("GetModuleHandle", "str", "user32.dll", "ptr"), "astr", "SendMessageW", "ptr")
-    }
-    
-    if !(pcb := DllCall("GlobalAlloc", "uint", 0, "ptr", 96, "ptr"))
-        throw
-    DllCall("VirtualProtect", "ptr", pcb, "ptr", 96, "uint", 0x40, "uint*", 0)
-    
-    p := pcb
-    if (A_PtrSize = 8)
-    {
-        /*
-        48 89 4c 24 08  ; mov [rsp+8], rcx
-        48 89 54'24 10  ; mov [rsp+16], rdx
-        4c 89 44 24 18  ; mov [rsp+24], r8
-        4c'89 4c 24 20  ; mov [rsp+32], r9
-        48 83 ec 28'    ; sub rsp, 40
-        4c 8d 44 24 30  ; lea r8, [rsp+48]  (arg 3, &params)
-        49 b9 ..        ; mov r9, .. (arg 4, operand to follow)
-        */
-        p := NumPut(0x54894808244c8948, p+0)
-        p := NumPut(0x4c182444894c1024, p+0)
-        p := NumPut(0x28ec834820244c89, p+0)
-        p := NumPut(  0xb9493024448d4c, p+0) - 1
-        lParamPtr := p, p += 8
-        
-        p := NumPut(0xba, p+0, "char") ; mov edx, nmsg
-        p := NumPut(sMsg, p+0, "int")
-        p := NumPut(0xb9, p+0, "char") ; mov ecx, hwnd
-        p := NumPut(sHwnd, p+0, "int")
-        p := NumPut(0xb848, p+0, "short") ; mov rax, SendMessageW
-        p := NumPut(sSendMessageW, p+0)
-        /*
-        ff d0        ; call rax
-        48 83 c4 28  ; add rsp, 40
-        c3           ; ret
-        */
-        p := NumPut(0x00c328c48348d0ff, p+0)
-    }
-    else ;(A_PtrSize = 4)
-    {
-        p := NumPut(0x68, p+0, "char")      ; push ... (lParam data)
-        lParamPtr := p, p += 4
-        p := NumPut(0x0824448d, p+0, "int") ; lea eax, [esp+8]
-        p := NumPut(0x50, p+0, "char")      ; push eax
-        p := NumPut(0x68, p+0, "char")      ; push nmsg
-        p := NumPut(sMsg, p+0, "int")
-        p := NumPut(0x68, p+0, "char")      ; push hwnd
-        p := NumPut(sHwnd, p+0, "int")
-        p := NumPut(0xb8, p+0, "char")      ; mov eax, &SendMessageW
-        p := NumPut(sSendMessageW, p+0, "int")
-        p := NumPut(0xd0ff, p+0, "short")   ; call eax
-        p := NumPut(0xc2, p+0, "char")      ; ret argsize
-        p := NumPut((InStr(Options, "C") ? 0 : ParamCount*4), p+0, "short")
-    }
-    NumPut(p, lParamPtr+0) ; To be passed as lParam.
-    p := NumPut(&fn, p+0)
-    p := NumPut(ParamCount, p+0, "int")
-    return pcb
-}
-
-VA_RegisterSyncCallback_Msg(wParam, lParam)
-{
-    if (A_Gui != "VA_RegisterSyncCallback")
-        return
-    fn := Object(NumGet(lParam + 0))
-    paramCount := NumGet(lParam + A_PtrSize, "int")
-    params := []
-    Loop % paramCount
-        params.Push(NumGet(wParam + A_PtrSize * (A_Index-1)))
-    return %fn%(params*)
-}
 
 ;
 ; INTERFACE WRAPPERS
@@ -1107,50 +895,6 @@ VA_IAudioSessionManager_GetSimpleAudioVolume(this, AudioSessionGuid, StreamFlags
     return DllCall(NumGet(NumGet(this+0)+4*A_PtrSize), "ptr", this, "ptr", VA_GUID(AudioSessionGuid), "uint", StreamFlags, "uint*", AudioVolume)
 }
 
-;
-; IMMDeviceEnumerator
-;
-VA_IMMDeviceEnumerator_EnumAudioEndpoints(this, DataFlow, StateMask, ByRef Devices) {
-    return DllCall(NumGet(NumGet(this+0)+3*A_PtrSize), "ptr", this, "int", DataFlow, "uint", StateMask, "ptr*", Devices)
-}
-VA_IMMDeviceEnumerator_GetDefaultAudioEndpoint(this, DataFlow, Role, ByRef Endpoint) {
-    return DllCall(NumGet(NumGet(this+0)+4*A_PtrSize), "ptr", this, "int", DataFlow, "int", Role, "ptr*", Endpoint)
-}
-VA_IMMDeviceEnumerator_GetDevice(this, id, ByRef Device) {
-    return DllCall(NumGet(NumGet(this+0)+5*A_PtrSize), "ptr", this, "wstr", id, "ptr*", Device)
-}
-VA_IMMDeviceEnumerator_RegisterEndpointNotificationCallback(this, Client) {
-    return DllCall(NumGet(NumGet(this+0)+6*A_PtrSize), "ptr", this, "ptr", Client)
-}
-VA_IMMDeviceEnumerator_UnregisterEndpointNotificationCallback(this, Client) {
-    return DllCall(NumGet(NumGet(this+0)+7*A_PtrSize), "ptr", this, "ptr", Client)
-}
-
-;
-; IMMDeviceCollection
-;
-VA_IMMDeviceCollection_GetCount(this, ByRef Count) {
-    return DllCall(NumGet(NumGet(this+0)+3*A_PtrSize), "ptr", this, "uint*", Count)
-}
-VA_IMMDeviceCollection_Item(this, Index, ByRef Device) {
-    return DllCall(NumGet(NumGet(this+0)+4*A_PtrSize), "ptr", this, "uint", Index, "ptr*", Device)
-}
-
-;
-; IControlInterface
-;
-VA_IControlInterface_GetName(this, ByRef Name) {
-    hr := DllCall(NumGet(NumGet(this+0)+3*A_PtrSize), "ptr", this, "ptr*", Name)
-    VA_WStrOut(Name)
-    return hr
-}
-VA_IControlInterface_GetIID(this, ByRef IID) {
-    VarSetCapacity(IID,16,0)
-    hr := DllCall(NumGet(NumGet(this+0)+4*A_PtrSize), "ptr", this, "ptr", &IID)
-    VA_GUIDOut(IID)
-    return hr
-}
-
 
 /*
     INTERFACES REQUIRING WINDOWS 7 / SERVER 2008 R2
@@ -1208,16 +952,4 @@ VA_IAudioSessionEnumerator_GetCount(this, ByRef SessionCount) {
 }
 VA_IAudioSessionEnumerator_GetSession(this, SessionCount, ByRef Session) {
     return DllCall(NumGet(NumGet(this+0)+4*A_PtrSize), "ptr", this, "int", SessionCount, "ptr*", Session)
-}
-
-
-/*
-    UNDOCUMENTED INTERFACES
-*/
-
-; Thanks to Dave Amenta for publishing this interface - http://goo.gl/6L93L
-; IID := "{568b9108-44bf-40b4-9006-86afe5b5a620}"
-; CLSID := "{294935CE-F637-4E7C-A41B-AB255460B862}"
-VA_xIPolicyConfigVista_SetDefaultEndpoint(this, DeviceId, Role) {
-    return DllCall(NumGet(NumGet(this+0)+12*A_PtrSize), "ptr", this, "wstr", DeviceId, "int", Role)
 }

@@ -1,4 +1,4 @@
-;#Include maw-muter.ahk
+;#Include %A_ScriptDir%\maw-muter.ahk
 #Persistent
 #SingleInstance Force
 SetTitleMatchMode, 2
