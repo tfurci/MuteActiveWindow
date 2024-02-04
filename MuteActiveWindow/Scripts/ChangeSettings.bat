@@ -11,7 +11,7 @@ echo  MuteActiveWindow config
 echo ========================
 echo  1. Change Keybind
 echo  2. Change Muting Method
-echo  3. Option 3
+echo  3. Enable Maw-Muter.ahk method
 echo  4. Option 4
 echo  5. Option 5
 echo  0. Exit
@@ -21,9 +21,9 @@ set /p choice=Enter your choice (0-5):
 if "%choice%"=="1" (
     goto runupdatehotkey
 ) else if "%choice%"=="2" (
-    goto runupdatemutingmethod
+    goto test2
 ) else if "%choice%"=="3" (
-    goto test3
+    goto runmawmuterahkenabler
 ) else if "%choice%"=="4" (
     goto test4
 ) else if "%choice%"=="5" (
@@ -66,10 +66,24 @@ echo Hotkey has been updated to: %newHotkey%
 pause
 goto menu
 
-:runupdatemutingmethod
-rem Test 2 code here
-echo Running script for Option 2
-rem Add your script/command for Option 2 here
+:runmawmuterahkenabler
+cls
+echo ========================
+echo  Enable MAW-MUTER.ahk
+echo ========================
+
+set "filename1=%scriptFolder%MuteActiveWindow.ahk"
+set "outfile=%scriptFolder%tempFile.ahk"
+set "search1=;MAWAHK(exeName)"
+set "replace1=MAWAHK(exeName)"
+set "search2=;MAWAHK(uwpprocess)"
+set "replace2=MAWAHK(uwpprocess)"
+set "search3=;#Include"
+set "replace3=#Include"
+
+powershell -Command "& {(Get-Content '%filename1%' -Raw) -replace [regex]::Escape('%search1%'), '%replace1%' -replace [regex]::Escape('%search2%'), '%replace2%' -replace [regex]::Escape('%search3%'), '%replace3%' | Set-Content '%filename1%'}"
+
+echo. maw-muter.ahk muting method enabled
 pause
 goto menu
 
