@@ -1,3 +1,4 @@
+;#Include maw-muter.ahk
 #Persistent
 #SingleInstance Force
 SetTitleMatchMode, 2
@@ -44,11 +45,18 @@ if (FileExist(CheckMutingMethod)) {
             RunWait, %ScriptDir%\maw-muter.exe, , Hide
         } else
             MsgBox, maw-muter.exe not found in the script directory.
-    } else {
+     } else if (MutingMethodSelected = "2") {
         if (FileExist(ScriptDir . "\svcl.exe"))
             mutingmethod := "svcl"
         else
             MsgBox, svcl.exe not found in the script directory.
+    } else if (MutingMethodSelected = "3") {
+        if (FileExist(ScriptDir . "\maw-muter.ahk")) {
+            mutingmethod := "maw-muter_ahk"
+        } else
+            MsgBox, maw-muter_ahk.ahk not found in the script directory.
+    } else {
+        MsgBox, Invalid selection in SelectMutingMethod.txt: %MutingMethodSelected%
     }
 } else {
     MsgBox, File not found: %CheckMutingMethod%
@@ -100,6 +108,9 @@ RunMute:
                 } else if (mutingmethod = "maw-muter") {
                     ; Run the maw-muter.exe command to mute the active window's .exe
                     RunWait, %ScriptDir%\maw-muter.exe mute "%uwpprocess%", , Hide
+                } else if (mutingmethod = "maw-muter_ahk") {
+                    ; Run the maw-muter.ahk command to mute the active window's .exe
+                    ;MAWAHK(uwpprocess)
                 }
             }
         } else {
@@ -114,6 +125,9 @@ RunMute:
                 } else if (mutingmethod = "maw-muter") {
                     ; Run the maw-muter.exe command to mute the active window's .exe
                     RunWait, %ScriptDir%\maw-muter.exe mute "%exeName%", , Hide
+                } else if (mutingmethod = "maw-muter_ahk") {
+                    ; Run the maw-muter.exe command to mute the active window's .exe
+                    ;MAWAHK(exeName)
                 }
             }
         }
