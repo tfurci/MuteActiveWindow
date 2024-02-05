@@ -2,7 +2,7 @@
 
 MAWAHK(ProcessName) {
     if !(Volume := GetVolumeObject(ProcessName)) {
-        MsgBox, There was a problem retrieving the application volume interface
+        ; MsgBox, There was a problem retrieving the application volume interface
         return
     }
     
