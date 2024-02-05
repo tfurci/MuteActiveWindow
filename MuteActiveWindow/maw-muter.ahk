@@ -2,7 +2,8 @@
 
 MAWAHK(ProcessName) {
     if !(Volume := GetVolumeObject(ProcessName)) {
-        MsgBox, There was a problem retrieving the application volume interface
+        ToolTip, There was a problem retrieving the application volume interface
+        SetTimer, RemoveToolTip, 500 ; Display the tooltip for 3 seconds
         return
     }
     
@@ -85,6 +86,11 @@ GetVolumeObject(targetExeName) {
     ; MsgBox No active audio session found for the specified process: %targetExeName%
     return ; Return 0 if there's an issue retrieving the interface
 }
+
+RemoveToolTip:
+    ToolTip ; Remove the tooltip
+    SetTimer, RemoveToolTip, Off ; Turn off the timer
+    return
 
 GetProcessNameFromPID(PID)
 {
