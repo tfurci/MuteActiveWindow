@@ -22,6 +22,7 @@ set "aesScriptPath=%rootDir%\Scripts\AutoEnableStartup.bat"
 set "mainScriptPath=%rootDir%\MuteActiveWindow.ahk"
 set "mawMuterPath=%rootDir%\maw-muter.exe"
 set "configurerPath=%rootDir%\Scripts\ChangeSettings.bat"
+set "mawmuterahkPath=%rootDir%\maw-muter.ahk"
 
 :: Check for curl installation
 where curl >nul 2>&1 || (
@@ -68,6 +69,7 @@ call :updateScript "%mawMuterPath%" "https://github.com/tfurci/maw-muter/release
 echo.
 call :updateScript "%configurerPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/Scripts/ChangeSettings.bat"
 echo.
+call :updateScript "%mawmuterahkPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/maw-muter.ahk"
 
 ::Re-Enable maw-muter.ahk if it was enabled in the first place
 set "filename1=%rootDir%\MuteActiveWindow.ahk"
