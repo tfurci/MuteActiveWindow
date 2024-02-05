@@ -21,6 +21,7 @@ if /i "%betaFlag%"=="-beta" (
 set "aesScriptPath=%rootDir%\Scripts\AutoEnableStartup.bat"
 set "mainScriptPath=%rootDir%\MuteActiveWindow.ahk"
 set "mawMuterPath=%rootDir%\maw-muter.exe"
+set "configurerPath=%rootDir%\Scripts\ChangeSettings.bat"
 
 :: Check for curl installation
 where curl >nul 2>&1 || (
@@ -29,6 +30,16 @@ where curl >nul 2>&1 || (
     if not errorlevel 2 start https://github.com/tfurci/muteactivewindow
     exit
 )
+
+:: Check for powershell installation
+where powershell >nul 2>&1
+if %errorlevel% neq 0 (
+    echo PowerShell is not installed.
+    choice /C YN /M "Do you want to open GitHub repository for manual update? [Y/N]: "
+    if not errorlevel 2 start https://github.com/tfurci/muteactivewindow
+    exit
+)
+
 
 :: List of unnecessary files to be deleted
 set "filesToDelete=Scripts\BatUpdater.bat"
@@ -55,6 +66,24 @@ call :updateScript "%mainScriptPath%" "%githubRootURL%%githubBranch%/MuteActiveW
 echo.
 call :updateScript "%mawMuterPath%" "https://github.com/tfurci/maw-muter/releases/latest/download/maw-muter.exe"
 echo.
+call :updateScript "%configurerPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/Scripts/ChangeSettings.bat"
+echo.
+
+::Re-Enable maw-muter.ahk if it was enabled in the first place
+set "filename1=%rootDir%\MuteActiveWindow.ahk"
+set "search1=;MAWAHK(exeName)"
+set "replace1=MAWAHK(exeName)"
+set "search2=;MAWAHK(uwpprocess)"
+set "replace2=MAWAHK(uwpprocess)"
+set "search3=;#Include"
+set "replace3=#Include"
+set "MuteconfigFile=%RootDir%\Config\SelectMutingMethod.txt"
+set /p mutingMethod=<"%MuteconfigFile%"
+if "%mutingMethod%" == "3" (
+    powershell -Command "& {(Get-Content '%filename1%' -Raw) -replace [regex]::Escape('%search1%'), '%replace1%' -replace [regex]::Escape('%search2%'), '%replace2%' -replace [regex]::Escape('%search3%'), '%replace3%' | Set-Content '%filename1%'}"
+    echo maw-muter.ahk muting method re-enabled
+    echo.
+)
 
 :: Run the main script
 if exist "%mainScriptPath%" (
