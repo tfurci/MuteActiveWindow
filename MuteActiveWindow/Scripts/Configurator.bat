@@ -12,8 +12,8 @@ echo ========================
 echo  1. Change Keybind
 echo  2. Change Muting Method
 echo  3. Enable Maw-Muter.ahk method
-echo  4. Option 4
-echo  5. Option 5
+echo  4. Force restart MuteActiveWindow
+echo  5. Enable/Disable Beta Updates
 echo  0. Exit
 echo ========================
 set /p choice=Enter your choice (0-5): 
