@@ -187,7 +187,7 @@ OpenConfigFolder() {
 }
 
 OpenConfigurator() {
-    Try Run, explorer.exe "%A_ScriptDir%\Config\Configurator.bat"
+    Try Run, explorer.exe "%A_ScriptDir%\Scripts\Configurator.bat"
 }
 
 OpenHotkeyFolder() {

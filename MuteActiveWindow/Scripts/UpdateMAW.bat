@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 set "currentDir=%~dp0"
 set "rootDir=%currentDir%.."
 set "betaFlag=%~1"
-echo Starting MAW Updater (291223.01)
+echo Starting MAW Updater (060224.01)
 echo.
 
 :: Define GitHub URLs
