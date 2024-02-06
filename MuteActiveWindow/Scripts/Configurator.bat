@@ -7,7 +7,7 @@ set "configFolder=%scriptFolder%Config"
 
 cls
 echo ========================
-echo  MuteActiveWindow config
+echo  MuteActiveWindow Configurator
 echo ========================
 echo  1. Change Keybind
 echo  2. Change Muting Method

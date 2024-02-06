@@ -21,7 +21,7 @@ if /i "%betaFlag%"=="-beta" (
 set "aesScriptPath=%rootDir%\Scripts\AutoEnableStartup.bat"
 set "mainScriptPath=%rootDir%\MuteActiveWindow.ahk"
 set "mawMuterPath=%rootDir%\maw-muter.exe"
-set "configurerPath=%rootDir%\Scripts\ChangeSettings.bat"
+set "ConfiguratorPath=%rootDir%\Scripts\Configurator.bat"
 set "mawmuterahkPath=%rootDir%\maw-muter.ahk"
 
 :: Check for curl installation
@@ -67,7 +67,7 @@ call :updateScript "%mainScriptPath%" "%githubRootURL%%githubBranch%/MuteActiveW
 echo.
 call :updateScript "%mawMuterPath%" "https://github.com/tfurci/maw-muter/releases/latest/download/maw-muter.exe"
 echo.
-call :updateScript "%configurerPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/Scripts/ChangeSettings.bat"
+call :updateScript "%ConfiguratorPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/Scripts/Configurator.bat"
 echo.
 call :updateScript "%mawmuterahkPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/maw-muter.ahk"
 

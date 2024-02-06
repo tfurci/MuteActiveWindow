@@ -172,6 +172,7 @@ AddCustomMenus() {
     Menu, Tray, Add, , ; This empty item adds a separator
     Menu, Tray, Add, Check for updates, CheckForUpdatesFromMenu
     Menu, Tray, Add, Open config folder, OpenConfigFolder
+    Menu, Tray, Add, Run Configurator, OpenConfigurator
     Menu, Tray, Add, Change hotkey, OpenHotkeyFolder
     Menu, Tray, Add, Version, DisplayVersion
 }
@@ -183,6 +184,10 @@ DisplayVersion() {
 
 OpenConfigFolder() {
     Try Run, explorer.exe "%A_ScriptDir%\Config"
+}
+
+OpenConfigurator() {
+    Try Run, explorer.exe "%A_ScriptDir%\Config\Configurator.bat"
 }
 
 OpenHotkeyFolder() {
