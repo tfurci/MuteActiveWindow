@@ -69,7 +69,7 @@ call :updateScript "%mawMuterPath%" "https://github.com/tfurci/maw-muter/release
 echo.
 call :updateScript "%ConfiguratorPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/Scripts/Configurator.bat"
 echo.
-call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfurci/maw-muter/main/maw-muter%20AHK/maw-muter.ahk"
+call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfurci/maw-muter/main/maw-muter_AHK/maw-muter.ahk"
 
 ::Re-Enable maw-muter.ahk if it was enabled in the first place
 set "filename1=%rootDir%\MuteActiveWindow.ahk"
