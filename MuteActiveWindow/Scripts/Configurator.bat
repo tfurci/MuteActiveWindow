@@ -5,6 +5,14 @@ set "rootFolder=%~dp0"
 set "scriptFolder=%rootFolder%..\"
 set "configFolder=%scriptFolder%Config"
 
+where powershell >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Configurator cannot be run because PowerShell is not installed.
+    choice /C YN /M "Do you want to open GitHub repository for manual update? [Y/N]: "
+    if not errorlevel 2 start https://github.com/tfurci/muteactivewindow
+    exit
+)
+
 cls
 echo ========================
 echo  MuteActiveWindow Configurator
@@ -21,13 +29,13 @@ set /p choice=Enter your choice (0-5):
 if "%choice%"=="1" (
     goto runupdatehotkey
 ) else if "%choice%"=="2" (
-    goto test2
+    goto runmutingmethodchanger
 ) else if "%choice%"=="3" (
     goto runmawmuterahkenabler
 ) else if "%choice%"=="4" (
-    goto test4
+    goto forcerestartmaw
 ) else if "%choice%"=="5" (
-    goto test5
+    goto enabledisablebetaupdates
 ) else if "%choice%"=="0" (
     echo Exiting...
     exit /b 0
@@ -112,23 +120,87 @@ echo. maw-muter.ahk muting method enabled
 pause
 goto menu
 
-:test3
-rem Test 3 code here
-echo Running script for Option 3
-rem Add your script/command for Option 3 here
+:runmutingmethodchanger
+
+cls
+rem Set the path for the MutingConfigFile
+set "MutingConfigFile=%configFolder%\SelectMutingMethod.txt"
+echo ========================
+echo  Change muting method
+echo ========================
+echo.
+echo Select Muting Method:
+echo 1. maw-muter.ahk (newest, based of VA.ahk & mute_current_application's fix made by tfurci, fastest, built into .ahk)
+echo 2. maw-muter.exe (default, open source, works for most apps)
+echo 3. svcl.exe
+echo.
+
+rem Prompt the user for their choice
+set /p choice="Enter your choice (1-3): "
+
+rem Validate the user input and set the selectedMethod variable accordingly
+if "%choice%"=="1" (
+    set "selectedMethod=3"
+) else if "%choice%"=="2" (
+    set "selectedMethod=1"
+) else if "%choice%"=="3" (
+    set "selectedMethod=2"
+) else (
+    echo Invalid choice
+    exit /b 1
+)
+
+rem Use PowerShell to replace the content of the first line in the text file
+powershell -Command "(Get-Content '%MutingConfigFile%') | ForEach-Object { if ($_.ReadCount -eq 1) { '%selectedMethod%' } else { $_ } } | Set-Content '%MutingConfigFile%'"
+
+echo Number for muting method replaced with %selectedMethod%
+if "%choice%"=="1" (
+    goto runmawmuterahkenabler
+)
 pause
 goto menu
 
-:test4
-rem Test 4 code here
-echo Running script for Option 4
-rem Add your script/command for Option 4 here
+:forcerestartmaw
+rem Taskkill AutoHotkeyU64.exe asynchronously
+start /b taskkill /f /im AutoHotkeyU64.exe >nul 2>&1
+
+rem Run MuteActiveWindow.ahk
+start "" "%scriptFolder%\MuteActiveWindow.ahk"
+echo MuteActiveWindow force restarted!
 pause
 goto menu
 
-:test5
-rem Test 5 code here
-echo Running script for Option 5
-rem Add your script/command for Option 5 here
+:enabledisablebetaupdates
+set "BetaConfigFile=%configFolder%\EnableBetaUpdates.txt"
+cls
+echo ========================
+echo  Enable/Disable beta updates
+echo ========================
+echo.
+echo Select Muting Method:
+echo 1. Enable BETA updates
+echo 2. Disable BETA updates
+echo.
+set /p choice="Enter your choice (1-3): "
+
+rem Validate the user input and set the selectedMethod variable accordingly
+if "%choice%"=="1" (
+    set "betachoice=1"
+) else if "%choice%"=="2" (
+    set "betachoice=0"
+) else (
+    echo Invalid choice
+    exit /b 1
+)
+
+rem Use PowerShell to replace the content of the first line in the text file
+powershell -Command "(Get-Content '%BetaConfigFile%') | ForEach-Object { if ($_.ReadCount -eq 1) { '%betachoice%' } else { $_ } } | Set-Content '%BetaConfigFile%'"
+
+if "%choice%"=="1" (
+    echo Beta updates enabled!
+) else if "%choice%"=="2" (
+    echo Beta updates disabled!
+)
+
 pause
 goto menu
