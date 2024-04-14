@@ -51,10 +51,23 @@ if (FileExist(CheckMutingMethod)) {
         else
             MsgBox, svcl.exe not found in the script directory.
     } else if (MutingMethodSelected = "3") {
-        if (FileExist(ScriptDir . "\maw-muter.ahk")) {
-            mutingmethod := "maw-muter_ahk"
-        } else
-            MsgBox, maw-muter_ahk.ahk not found in the script directory.
+        ahkmethod := "disabled"
+        ;ahkmethod := "enabled"
+        if (ahkmethod = "enabled") {
+            if (FileExist(ScriptDir . "\maw-muter.ahk")) {
+                mutingmethod := "maw-muter_ahk"
+            } else {
+                MsgBox, maw-muter.ahk not found in the script directory.
+            }
+        } else {
+            MsgBox, 4, maw-muter.ahk method, maw-muter.ahk method selected but not disabled. Do you want to run CONFIGURATOR and select option 3 to enable it?
+    
+            ; Check if the user clicked "Yes"
+            IfMsgBox Yes
+            {   
+                OpenConfigurator()
+            }
+        }
     } else {
         MsgBox, Invalid selection in SelectMutingMethod.txt: %MutingMethodSelected%
     }

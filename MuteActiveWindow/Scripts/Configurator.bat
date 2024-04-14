@@ -64,13 +64,18 @@ echo so SHIFT+F1 would be: +F1
 echo.
 set /p newHotkey=Enter the new hotkey:
 
-REM Clear existing Hotkey.txt by creating an empty file
-type nul > "%hotkeyFile%"
+REM Check if user input is not empty
+if not "%newHotkey%"=="" (
+    REM Clear existing Hotkey.txt by creating an empty file
+    type nul > "%hotkeyFile%"
 
-REM Write the new hotkey to Hotkey.txt
-(echo(%newHotkey%) > "%hotkeyFile%"
+    REM Write the new hotkey to Hotkey.txt
+    (echo(%newHotkey%) > "%hotkeyFile%"
 
-echo Hotkey has been updated to: %newHotkey%
+    echo Hotkey has been updated to: %newHotkey%
+) else (
+    echo No changes made to the hotkey.
+)
 pause
 goto menu
 
@@ -88,6 +93,8 @@ set "search2=;MAWAHK(uwpprocess)"
 set "replace2=MAWAHK(uwpprocess)"
 set "search3=;#Include"
 set "replace3=#Include"
+set "search4=;ahkmethod"
+set "replace4=ahkmethod"
 
 rem Check if maw-muter.ahk exists in the script folder
 if not exist "%scriptFolder%maw-muter.ahk" (
@@ -114,7 +121,7 @@ if "%mutingMethod%" neq "3" (
 )
 
 rem Perform the search and replace operations
-powershell -Command "& {(Get-Content '%filename1%' -Raw) -replace [regex]::Escape('%search1%'), '%replace1%' -replace [regex]::Escape('%search2%'), '%replace2%' -replace [regex]::Escape('%search3%'), '%replace3%' | Set-Content '%filename1%'}"
+powershell -Command "& {(Get-Content '%filename1%' -Raw) -replace [regex]::Escape('%search1%'), '%replace1%' -replace [regex]::Escape('%search2%'), '%replace2%' -replace [regex]::Escape('%search3%'), '%replace3%' -replace [regex]::Escape('%search4%'), '%replace4%' | Set-Content '%filename1%'}"
 
 echo. maw-muter.ahk muting method enabled
 pause
@@ -153,7 +160,7 @@ if "%choice%"=="1" (
 rem Use PowerShell to replace the content of the first line in the text file
 powershell -Command "(Get-Content '%MutingConfigFile%') | ForEach-Object { if ($_.ReadCount -eq 1) { '%selectedMethod%' } else { $_ } } | Set-Content '%MutingConfigFile%'"
 
-echo Number for muting method replaced with %selectedMethod%
+echo Muting method sucesfully changed.
 if "%choice%"=="1" (
     goto runmawmuterahkenabler
 )
