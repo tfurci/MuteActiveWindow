@@ -276,6 +276,10 @@ CheckForUpdates(isFromMenu := false) {
         ; Uncomment to see comparing of versions
         ; MsgBox, LatestVersion: %LatestVersion%`nScriptVersion: %ScriptVersion%
 
+        if (isFromMenu) {
+        URLDownloadToFile, %UpdateScriptURL%, %UpdateScriptBat%
+    }
+
         ; Compare the full version strings
         if (ScriptVersion != LatestVersion) {
             ; Versions are different, prompt the user
