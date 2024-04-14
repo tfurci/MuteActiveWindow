@@ -79,10 +79,12 @@ set "search2=;MAWAHK(uwpprocess)"
 set "replace2=MAWAHK(uwpprocess)"
 set "search3=;#Include"
 set "replace3=#Include"
+set "search4=;ahkmethod"
+set "replace4=ahkmethod"
 set "MuteconfigFile=%RootDir%\Config\SelectMutingMethod.txt"
 set /p mutingMethod=<"%MuteconfigFile%"
 if "%mutingMethod%" == "3" (
-    powershell -Command "& {(Get-Content '%filename1%' -Raw) -replace [regex]::Escape('%search1%'), '%replace1%' -replace [regex]::Escape('%search2%'), '%replace2%' -replace [regex]::Escape('%search3%'), '%replace3%' | Set-Content '%filename1%'}"
+    powershell -Command "& {(Get-Content '%filename1%' -Raw) -replace [regex]::Escape('%search1%'), '%replace1%' -replace [regex]::Escape('%search2%'), '%replace2%' -replace [regex]::Escape('%search3%'), '%replace3%' -replace [regex]::Escape('%search4%'), '%replace4%' | Set-Content '%filename1%'}"
     echo maw-muter.ahk muting method re-enabled
     echo.
 )
