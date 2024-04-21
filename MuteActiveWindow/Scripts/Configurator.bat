@@ -134,7 +134,11 @@ powershell -Command "& {(Get-Content '%filename1%' -Raw) -replace [regex]::Escap
 start "" "%scriptFolder%\MuteActiveWindow.ahk"
 echo. maw-muter.ahk muting method enabled
 pause
-goto menu
+if /i "%argumentFlag%"=="-3" (
+    exit /b 0
+) else (
+    goto menu
+)
 
 :runmutingmethodchanger
 
