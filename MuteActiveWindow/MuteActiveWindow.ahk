@@ -60,7 +60,7 @@ if (FileExist(CheckMutingMethod)) {
                 MsgBox, maw-muter.ahk not found in the script directory.
             }
         } else {
-            MsgBox, 4, MAW-MUTER.AHK, maw-muter.ahk method selected but not disabled. Do you want to automatically enable it?
+            MsgBox, 4, MAW-MUTER.AHK, maw-muter.ahk method selected but not enabled. Do you want to automatically enable it?
     
             ; Check if the user clicked "Yes"
             IfMsgBox Yes
