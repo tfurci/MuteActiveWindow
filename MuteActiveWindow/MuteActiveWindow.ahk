@@ -60,12 +60,12 @@ if (FileExist(CheckMutingMethod)) {
                 MsgBox, maw-muter.ahk not found in the script directory.
             }
         } else {
-            MsgBox, 4, maw-muter.ahk method, maw-muter.ahk method selected but not disabled. Do you want to run CONFIGURATOR and select option 3 to enable it?
+            MsgBox, 4, MAW-MUTER.AHK, maw-muter.ahk method selected but not disabled. Do you want to automatically enable it?
     
             ; Check if the user clicked "Yes"
             IfMsgBox Yes
             {   
-                OpenConfigurator()
+                OpenConfiguratorMMAHK()
             }
         }
     } else {
@@ -200,7 +200,11 @@ OpenConfigFolder() {
 }
 
 OpenConfigurator() {
-    Try Run, explorer.exe "%A_ScriptDir%\Scripts\Configurator.bat"
+    Try Run, "%A_ScriptDir%\Scripts\Configurator.bat"
+}
+
+OpenConfiguratorMMAHK() {
+    Run, %ComSpec% /c "%A_ScriptDir%\Scripts\Configurator.bat -3"
 }
 
 OpenHotkeyFolder() {

@@ -1,5 +1,4 @@
 @echo off
-:menu
 
 set "rootFolder=%~dp0"
 set "scriptFolder=%rootFolder%..\"
@@ -13,6 +12,14 @@ if %errorlevel% neq 0 (
     exit
 )
 
+set "argumentFlag=%~1"
+if /i "%argumentFlag%"=="-3" (
+    goto runmawmuterahkenabler
+) else (
+    echo Command line argument is not valid.
+)
+
+:menu
 cls
 echo ========================
 echo  MuteActiveWindow Configurator
@@ -73,6 +80,7 @@ if not "%newHotkey%"=="" (
     (echo(%newHotkey%) > "%hotkeyFile%"
 
     echo Hotkey has been updated to: %newHotkey%
+    start "" "%scriptFolder%\MuteActiveWindow.ahk"
 ) else (
     echo No changes made to the hotkey.
 )
@@ -123,6 +131,7 @@ if "%mutingMethod%" neq "3" (
 rem Perform the search and replace operations
 powershell -Command "& {(Get-Content '%filename1%' -Raw) -replace [regex]::Escape('%search1%'), '%replace1%' -replace [regex]::Escape('%search2%'), '%replace2%' -replace [regex]::Escape('%search3%'), '%replace3%' -replace [regex]::Escape('%search4%'), '%replace4%' | Set-Content '%filename1%'}"
 
+start "" "%scriptFolder%\MuteActiveWindow.ahk"
 echo. maw-muter.ahk muting method enabled
 pause
 goto menu
@@ -164,6 +173,7 @@ echo Muting method sucesfully changed.
 if "%choice%"=="1" (
     goto runmawmuterahkenabler
 )
+start "" "%scriptFolder%\MuteActiveWindow.ahk"
 pause
 goto menu
 
@@ -208,6 +218,6 @@ if "%choice%"=="1" (
 ) else if "%choice%"=="2" (
     echo Beta updates disabled!
 )
-
+start "" "%scriptFolder%\MuteActiveWindow.ahk"
 pause
 goto menu
