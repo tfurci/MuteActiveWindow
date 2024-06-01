@@ -145,9 +145,23 @@ if /i "%argumentFlag%"=="-3" (
 cls
 rem Set the path for the MutingConfigFile
 set "MutingConfigFile=%configFolder%\SelectMutingMethod.txt"
+
+rem Get the current method number from the text file
+set /P currentMethod=<"%MutingConfigFile%"
+set "currentMethodName="
+if "%currentMethod%"=="1" (
+    set "currentMethodName=svcl.exe"
+) else if "%currentMethod%"=="2" (
+    set "currentMethodName=maw-muter.exe (default, open source, works for most apps)"
+) else if "%currentMethod%"=="3" (
+    set "currentMethodName=maw-muter.ahk (newest, based on VA.ahk & mute_current_application's fix made by tfurci, fastest, built into .ahk)"
+)
+
 echo ========================
 echo  Change muting method
 echo ========================
+echo.
+echo Currently selected method: %currentMethodName%
 echo.
 echo Select Muting Method:
 echo 1. maw-muter.ahk (newest, based of VA.ahk & mute_current_application's fix made by tfurci, fastest, built into .ahk)

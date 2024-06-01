@@ -1,5 +1,6 @@
-- Added configurer(Still WIP)
-- Added new muting metho(based on my fix for mute_current_application)
+- Added configurator to change config files easier.
+- Added new muting method maw-muter.ahk (based on my fix for mute_current_application)
+- Fix updatemaw.bat updating if auto-updates are disabled
 
 (OLDER RELEASE)
 - Move updater to .ahk script directly(1 .bat updater still exists)
