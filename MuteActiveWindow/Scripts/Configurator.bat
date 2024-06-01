@@ -152,9 +152,9 @@ set "currentMethodName="
 if "%currentMethod%"=="1" (
     set "currentMethodName=svcl.exe"
 ) else if "%currentMethod%"=="2" (
-    set "currentMethodName=maw-muter.exe (default, open source, works for most apps)"
+    set "currentMethodName=maw-muter.exe"
 ) else if "%currentMethod%"=="3" (
-    set "currentMethodName=maw-muter.ahk (newest, based on VA.ahk & mute_current_application's fix made by tfurci, fastest, built into .ahk)"
+    set "currentMethodName=maw-muter.ahk"
 )
 
 echo ========================
