@@ -149,9 +149,9 @@ set "MutingConfigFile=%configFolder%\SelectMutingMethod.txt"
 rem Get the current method number from the text file
 set /P currentMethod=<"%MutingConfigFile%"
 set "currentMethodName="
-if "%currentMethod%"=="1" (
+if "%currentMethod%"=="2" (
     set "currentMethodName=svcl.exe"
-) else if "%currentMethod%"=="2" (
+) else if "%currentMethod%"=="1" (
     set "currentMethodName=maw-muter.exe"
 ) else if "%currentMethod%"=="3" (
     set "currentMethodName=maw-muter.ahk"
