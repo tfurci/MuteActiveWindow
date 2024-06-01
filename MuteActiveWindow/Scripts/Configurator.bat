@@ -212,11 +212,28 @@ echo ========================
 echo  Enable/Disable beta updates
 echo ========================
 echo.
-echo Select Muting Method:
+echo Select Beta Update Option:
 echo 1. Enable BETA updates
 echo 2. Disable BETA updates
 echo.
-set /p choice="Enter your choice (1-3): "
+
+rem Display if beta updates are enabled
+set /P betaStatus=<"%BetaConfigFile%"
+set "betaStatusName="
+if "%betaStatus%"=="1" (
+    set "betaStatusName=Enabled"
+) else if "%betaStatus%"=="0" (
+    set "betaStatusName=Disabled"
+) else (
+    set "betaStatusName=Unknown"
+)
+
+echo Beta updates currently: %betaStatusName%
+echo.
+
+rem Prompt the user for their choice
+set /p choice="Enter your choice (1-2): "
+
 
 rem Validate the user input and set the selectedMethod variable accordingly
 if "%choice%"=="1" (
