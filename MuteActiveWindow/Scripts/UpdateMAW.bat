@@ -61,13 +61,13 @@ echo.
 
 
 :: Update scripts
-call :updateScript "%aesScriptPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/Scripts/AutoEnableStartup.bat"
+call :forceUpdateScript "%aesScriptPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/Scripts/AutoEnableStartup.bat"
 echo.
-call :updateScript "%mainScriptPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/MuteActiveWindow.ahk"
+call :forceUpdateScript "%mainScriptPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/MuteActiveWindow.ahk"
 echo.
 call :updateScript "%mawMuterPath%" "https://github.com/tfurci/maw-muter/releases/latest/download/maw-muter.exe"
 echo.
-call :updateScript "%ConfiguratorPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/Scripts/Configurator.bat"
+call :forceUpdateScript "%ConfiguratorPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/Scripts/Configurator.bat"
 echo.
 call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfurci/maw-muter/main/maw-muter_AHK/maw-muter.ahk"
 
@@ -102,6 +102,25 @@ pause
 exit
 
 :updateScript
+set "localPath=%~1"
+set "url=%~2"
+if exist "%localPath%" (
+    echo Updating %~nx1...
+    curl -L -k -o "%localPath%.temp" "%url%"
+    fc "%localPath%.temp" "%localPath%" > nul
+    if errorlevel 1 (
+        move /y "%localPath%.temp" "%localPath%" > nul
+        echo Updated %~nx1.
+    ) else (
+        del "%localPath%.temp"
+        echo %~nx1 is already up to date.
+    )
+) else (
+    echo %~nx1 not found. Skipping update.
+)
+goto :eof
+
+:forceUpdateScript
 set "localPath=%~1"
 set "url=%~2"
 echo Updating %~nx1...
