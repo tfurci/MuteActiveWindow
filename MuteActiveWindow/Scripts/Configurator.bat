@@ -4,8 +4,8 @@ set "rootFolder=%~dp0"
 set "scriptFolder=%rootFolder%..\"
 set "configFolder=%scriptFolder%Config"
 
-set "mawMuterPath=%rootDir%\maw-muter.exe"
-set "mawmuterahkPath=%rootDir%\maw-muter.ahk"
+set "mawMuterPath=%scriptFolder%\maw-muter.exe"
+set "mawmuterahkPath=%scriptFolder%\maw-muter.ahk"
 
 where powershell >nul 2>&1
 if %errorlevel% neq 0 (
@@ -23,6 +23,7 @@ if /i "%argumentFlag%"=="-3" (
 )
 
 :menu
+set "choice="
 cls
 echo ========================
 echo  MuteActiveWindow Configurator
@@ -37,19 +38,25 @@ echo ========================
 set /p choice=Enter your choice (0-5): 
 
 if "%choice%"=="1" (
+    set "choice="
     goto runupdatehotkey
 ) else if "%choice%"=="2" (
+    set "choice="
     goto runmutingmethodchanger
 ) else if "%choice%"=="3" (
+    set "choice="
     goto runmawmuterahkenabler
 ) else if "%choice%"=="4" (
+    set "choice="
     goto forcerestartmaw
 ) else if "%choice%"=="5" (
+    set "choice="
     goto enabledisablebetaupdates
 ) else if "%choice%"=="0" (
     echo Exiting...
     exit /b 0
 ) else (
+    set "choice="
     echo Invalid choice. Please enter a valid option.
     pause
     goto menu
@@ -169,27 +176,32 @@ echo.
 echo Select Muting Method:
 echo 1. maw-muter.ahk (newest, based of VA.ahk & mute_current_application's fix made by tfurci, fastest, built into .ahk)
 echo 2. maw-muter.exe (default, open source, works for most apps)
-echo 3. svcl.exe
+echo 3. svcl.exe (Will open browser and automaticall donwload .zip file then just extract it to script's root folder)
+echo.
+echo 4. Return to Menu
 echo.
 
 rem Prompt the user for their choice
-set /p choice="Enter your choice (1-3): "
+set /p choice="Enter your choice (1-4): "
 
 rem Validate the user input and set the selectedMethod variable accordingly
 if "%choice%"=="1" (
     set "selectedMethod=3"
     call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfurci/maw-muter/main/maw-muter_AHK/maw-muter.ahk"
-    echo.
 ) else if "%choice%"=="2" (
     set "selectedMethod=1"
     call :updateScript "%mawMuterPath%" "https://github.com/tfurci/maw-muter/releases/latest/download/maw-muter.exe"
-    echo.
 ) else if "%choice%"=="3" (
     set "selectedMethod=2"
     explorer "https://www.nirsoft.net/utils/svcl-x64.zip"
+    pause
+) else if "%choice%"=="4" (
+    set "choice="
+    goto menu
 ) else (
     echo Invalid choice
-    exit /b 1
+    set "choice="
+    goto menu
 )
 
 rem Use PowerShell to replace the content of the first line in the text file
