@@ -4,6 +4,9 @@ set "rootFolder=%~dp0"
 set "scriptFolder=%rootFolder%..\"
 set "configFolder=%scriptFolder%Config"
 
+set "mawMuterPath=%rootDir%\maw-muter.exe"
+set "mawmuterahkPath=%rootDir%\maw-muter.ahk"
+
 where powershell >nul 2>&1
 if %errorlevel% neq 0 (
     echo Configurator cannot be run because PowerShell is not installed.
@@ -175,10 +178,15 @@ set /p choice="Enter your choice (1-3): "
 rem Validate the user input and set the selectedMethod variable accordingly
 if "%choice%"=="1" (
     set "selectedMethod=3"
+    call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfurci/maw-muter/main/maw-muter_AHK/maw-muter.ahk"
+    echo.
 ) else if "%choice%"=="2" (
     set "selectedMethod=1"
+    call :updateScript "%mawMuterPath%" "https://github.com/tfurci/maw-muter/releases/latest/download/maw-muter.exe"
+    echo.
 ) else if "%choice%"=="3" (
     set "selectedMethod=2"
+    explorer "https://www.nirsoft.net/utils/svcl-x64.zip"
 ) else (
     echo Invalid choice
     exit /b 1
@@ -256,3 +264,19 @@ if "%choice%"=="1" (
 start "" "%scriptFolder%\MuteActiveWindow.ahk"
 pause
 goto menu
+
+:updateScript
+set "localPath=%~1"
+set "url=%~2"
+echo Updating %~nx1...
+
+curl -L -k -o "%localPath%.temp" "%url%"
+fc "%localPath%.temp" "%localPath%" > nul
+if errorlevel 1 (
+    move /y "%localPath%.temp" "%localPath%" > nul
+    echo Updated %~nx1.
+) else (
+    del "%localPath%.temp"
+    echo %~nx1 is already up to date.
+)
+goto :eof
