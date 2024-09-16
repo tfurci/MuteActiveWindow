@@ -1,6 +1,7 @@
 ;#Include %A_ScriptDir%\maw-muter.ahk
 #Persistent
 #SingleInstance Force
+#UseHook
 SetTitleMatchMode, 2
 
 ; Get the directory of the AutoHotkey script
@@ -9,7 +10,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "8.3.1"
+global ScriptVersion := "8.3.2"
 
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages

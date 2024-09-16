@@ -2,6 +2,7 @@
 - Added new muting method maw-muter.ahk (based on my fix for mute_current_application) (needs to be downloaded manually)
 - Fix updatemaw.bat updating if auto-updates are disabled
 - Add CTRL+ALT+O to rerun script as administrator
+- Implement UseHook to get keybind in some games.
 
 (OLDER RELEASE)
 - Move updater to .ahk script directly(1 .bat updater still exists)

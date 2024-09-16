@@ -1,0 +1,31 @@
+name: Update Version
+
+on:
+  push:
+    branches:
+      - beta
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Extract version from AHK script
+        id: extract_version
+        run: |
+          # Extract the version string from the AutoHotkey script
+          VERSION=$(grep -oP 'global ScriptVersion := "\K[^"]+' MuteActiveWindow/MuteActiveWindow.ahk)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Update VERSION file
+        run: |
+          echo "${{ env.VERSION }}" > VERSION
+        # Ensure that changes are committed
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        git add VERSION
+        git commit -m "Update VERSION file to ${{ env.VERSION }}"
+        git push
