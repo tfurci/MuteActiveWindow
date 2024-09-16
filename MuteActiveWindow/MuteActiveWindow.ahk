@@ -9,7 +9,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "8.3.0"
+global ScriptVersion := "8.3.1"
 
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
@@ -339,3 +339,9 @@ CheckForUpdates(isFromMenu := false) {
     }
     
 return
+
+^!o::  ; CTRL+ALT+O to RE-RUN MAW as Admin
+    Run *RunAs "%A_ScriptFullPath%", , UseErrorLevel
+    if ErrorLevel
+        MsgBox, Failed to run MAW as administrator.
+    return
