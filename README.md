@@ -24,6 +24,7 @@ This script was inspired by [kristoffer-tvera/mute-current-application](https://
   - [Enable auto-updates](#enable-auto-updates)
   - [Manually check for updates](#manually-check-for-updates)
   - [Enable beta updates](#enable-beta-updates)
+- [Aditional Keybinds](#aditional-keybinds)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 
@@ -91,6 +92,11 @@ If you wish to disable this behaviour then:
 1. Open `Config/EnableBetaUpdates.txt`.
 2. Change first line from `0` to `1`
 3. Reload the script and if beta update is available prompt to update will be displayed.
+
+## Aditional Keybinds
+
+1. `CTRL + ALT + P` Opens prompt to add current program to exclusions list.
+2. `CTRL + ALT + O` Re-opens script with admin privileges.
 
 ## License
 
