@@ -1,5 +1,7 @@
+;#Include %A_ScriptDir%\maw-muter.ahk
 #Persistent
 #SingleInstance Force
+#UseHook
 SetTitleMatchMode, 2
 
 ; Get the directory of the AutoHotkey script
@@ -8,7 +10,7 @@ ScriptDir := A_ScriptDir
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
 
-global ScriptVersion := "8.2.0"
+global ScriptVersion := "8.3.2"
 
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
@@ -44,11 +46,31 @@ if (FileExist(CheckMutingMethod)) {
             RunWait, %ScriptDir%\maw-muter.exe, , Hide
         } else
             MsgBox, maw-muter.exe not found in the script directory.
-    } else {
+     } else if (MutingMethodSelected = "2") {
         if (FileExist(ScriptDir . "\svcl.exe"))
             mutingmethod := "svcl"
         else
             MsgBox, svcl.exe not found in the script directory.
+    } else if (MutingMethodSelected = "3") {
+        ahkmethod := "disabled"
+        ;ahkmethod := "enabled"
+        if (ahkmethod = "enabled") {
+            if (FileExist(ScriptDir . "\maw-muter.ahk")) {
+                mutingmethod := "maw-muter_ahk"
+            } else {
+                MsgBox, maw-muter.ahk not found in the script directory.
+            }
+        } else {
+            MsgBox, 4, MAW-MUTER.AHK, maw-muter.ahk method selected but not enabled. Do you want to automatically enable it?
+    
+            ; Check if the user clicked "Yes"
+            IfMsgBox Yes
+            {   
+                OpenConfiguratorMMAHK()
+            }
+        }
+    } else {
+        MsgBox, Invalid selection in SelectMutingMethod.txt: %MutingMethodSelected%
     }
 } else {
     MsgBox, File not found: %CheckMutingMethod%
@@ -100,6 +122,9 @@ RunMute:
                 } else if (mutingmethod = "maw-muter") {
                     ; Run the maw-muter.exe command to mute the active window's .exe
                     RunWait, %ScriptDir%\maw-muter.exe mute "%uwpprocess%", , Hide
+                } else if (mutingmethod = "maw-muter_ahk") {
+                    ; Run the maw-muter.ahk command to mute the active window's .exe
+                    ;MAWAHK(uwpprocess)
                 }
             }
         } else {
@@ -114,6 +139,9 @@ RunMute:
                 } else if (mutingmethod = "maw-muter") {
                     ; Run the maw-muter.exe command to mute the active window's .exe
                     RunWait, %ScriptDir%\maw-muter.exe mute "%exeName%", , Hide
+                } else if (mutingmethod = "maw-muter_ahk") {
+                    ; Run the maw-muter.exe command to mute the active window's .exe
+                    ;MAWAHK(exeName)
                 }
             }
         }
@@ -158,6 +186,7 @@ AddCustomMenus() {
     Menu, Tray, Add, , ; This empty item adds a separator
     Menu, Tray, Add, Check for updates, CheckForUpdatesFromMenu
     Menu, Tray, Add, Open config folder, OpenConfigFolder
+    Menu, Tray, Add, Run Configurator, OpenConfigurator
     Menu, Tray, Add, Change hotkey, OpenHotkeyFolder
     Menu, Tray, Add, Version, DisplayVersion
 }
@@ -169,6 +198,14 @@ DisplayVersion() {
 
 OpenConfigFolder() {
     Try Run, explorer.exe "%A_ScriptDir%\Config"
+}
+
+OpenConfigurator() {
+    Try Run, "%A_ScriptDir%\Scripts\Configurator.bat"
+}
+
+OpenConfiguratorMMAHK() {
+    Run, %ComSpec% /c "%A_ScriptDir%\Scripts\Configurator.bat -3"
 }
 
 OpenHotkeyFolder() {
@@ -244,6 +281,10 @@ CheckForUpdates(isFromMenu := false) {
         ; Uncomment to see comparing of versions
         ; MsgBox, LatestVersion: %LatestVersion%`nScriptVersion: %ScriptVersion%
 
+        if (isFromMenu) {
+        URLDownloadToFile, %UpdateScriptURL%, %UpdateScriptBat%
+    }
+
         ; Compare the full version strings
         if (ScriptVersion != LatestVersion) {
             ; Versions are different, prompt the user
@@ -299,3 +340,9 @@ CheckForUpdates(isFromMenu := false) {
     }
     
 return
+
+^!o::  ; CTRL+ALT+O to RE-RUN MAW as Admin
+    Run *RunAs "%A_ScriptFullPath%", , UseErrorLevel
+    if ErrorLevel
+        MsgBox, Failed to run MAW as administrator.
+    return

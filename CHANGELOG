@@ -1,7 +1,10 @@
+- Added configurator to change config files easier.
+- Added new muting method maw-muter.ahk (based on my fix for mute_current_application) (needs to be downloaded manually)
+- Fix updatemaw.bat updating if auto-updates are disabled
+- Add CTRL+ALT+O to rerun script as administrator
+- Implement UseHook to get keybind in some games.
+
+(OLDER RELEASE)
 - Move updater to .ahk script directly(1 .bat updater still exists)
 - Unnecessary files get removed with updates now.
 - maw-muter starts on script startup now to reduce first mute delay.
-
-(OLDER RELEASE)
-- Use multiple muting methods, you can change it in config folder
-- Add option to enable beta updates.

@@ -5,94 +5,59 @@
 
 # MuteActiveWindow
 
-**MuteActiveWindow** is an AutoHotkey script that allows you to mute the currently active window using a custom hotkey. **F1 by default!**
+**MuteActiveWindow** is an AutoHotkey script that allows you to mute the currently active window using a custom hotkey. **`F1` by default!**
 
 ---
 
-This script was inspired by [kristoffer-tvera/mute-current-application](https://github.com/kristoffer-tvera/mute-current-application) but was rewritten for svcl because the previous version didn't work for me with the majority of UWP and some other apps.
+This script was inspired by [kristoffer-tvera/mute-current-application](https://github.com/kristoffer-tvera/mute-current-application) but was rewritten for svcl and later custom open source solution MAW-MUTER because the previous version didn't work for me with the majority of UWP and some other apps, but I have published a fix that also fixes compatibility with UWP apps for kristoffer's script so feel free to use any of scripts.
+
 
 ## Table of Contents
 
-- [Prerequisites](#prerequisites)
-  - [Required Tools](#required-tools)
-  - [Additional File (Included in .rar release)](#additional-file-included-in-rar-release)
 - [Installation](#installation)
-- [Usage](#usage)
 - [Customize Hotkey](#customize-hotkey)
 - [Adding Exclusions](#adding-exclusions)
 - [Running the Script at Startup](#running-the-script-at-startup)
-  - [Automatic Startup](#automatic-startup)
+  - [Automatic Startup](#automatic-startup-recommended)
   - [Manual Startup](#manual-startup)
-- [Updating](#updating-your-script-and-pairs)
-  - [Automatic Update](#automatic-updates)
-  - [Manual Update](#manual-updates)
+- [Updating](#updating-your-script)
+  - [Enable auto-updates](#enable-auto-updates)
+  - [Manually check for updates](#manually-check-for-updates)
+  - [Enable beta updates](#enable-beta-updates)
+- [Aditional Keybinds](#aditional-keybinds)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
-
-## Prerequisites
-
-Before using this script, make sure you have the required tools and files in place.
-
-### Required Tools
-
-- [AutoHotkey](https://www.autohotkey.com/)(v1.x): If not already installed, download and install AutoHotkey to run the script.
-
-### Additional File (Included in .rar release)
-
-- Download the `svcl.exe`(64 bit) tool from [here](https://www.nirsoft.net/utils/sound_volume_command_line.html) or [direct link](https://www.nirsoft.net/utils/svcl-x64.zip) and place it in the same directory as the AutoHotkey script (`MuteActiveWindow.ahk`).
 
 ## Installation
 
 Follow these steps to set up the script:
 
-1. Clone or download this repository to your computer.
+1. Download [MuteActiveWindow](https://github.com/tfurci/MuteActiveWindow/releases) and extract it
 
-2. If there is no svcl in directory place the `svcl.exe` tool in the same directory as the AutoHotkey script (`MuteActiveWindow.ahk`).
+2. Install `AutoHotkey V1` from [here](https://www.autohotkey.com/download/ahk-install.exe)
 
-## Usage
+3. Start `MuteActiveWindow.ahk`
 
-To mute the active window, use the predefined hotkey (you can customize it in the script). When you press the hotkey, the active window's audio will be muted.
+4. if you downloaded `NO-EXE` version also download muting method of your choice: 
+  - [MAW-MUTER.ahk](https://github.com/tfurci/maw-muter/blob/main/maw-muter_AHK/maw-muter.ahk) (recommended and fastest)
+  - [MAW-MUTER.exe](https://github.com/tfurci/maw-muter/releases)
+  - [SVCL](https://www.nirsoft.net/utils/sound_volume_command_line.html)
 
 ## Customize Hotkey
 
-Change the hotkey by editing the "Hotkey.txt" file (located in the /Config directory) and replacing its contents with your desired hotkey (e.g., "F10").
+Change the hotkey by editing the `Hotkey.txt` file (located in the `/Config/Hotkey.txt` directory) and replacing its contents with your desired hotkey (e.g., `F10`).
 
 ## Adding Exclusions
 
 You can configure the script to exclude specific applications from being muted. Exclusions are useful if you want to prevent certain apps from being affected by the script. Here's how you can add exclusions:
 
-1. Open the `ExcludedApps.txt` file located in the "Config" folder.
+1. Have app that you want to mute opened and focused.
 
-2. Add the exe's of the applications you want to exclude, each on a separate line, in the following format:
-   You can get UWP exe's with this script from uwp-exe branch [link](https://github.com/tfurci/MuteActiveWindow/blob/uwp-exe/MuteActiveWindow/MAW-EXE.ahk) or use CTRL+ALT+P hotkey (on MAW v7.1.0+)
-
-   - For executable files and UWP apps (e.g., Brave.exe, WinStore.App.exe):
-     ```
-     Brave.exe
-     Spotify.exe
-     ```
-
-4. Save the `ExcludedApps.txt` file.
-
-5. Reload the script (or press the hotkey if it's already running) for the changes to take effect.
-
-Now, the specified applications will be excluded from the script's muting behavior.
-
-**Examples:**
-
-Suppose you want to exclude Brave (`Brave.exe`) and Xbox (`Xbox`) from being muted. Your `ExcludedApps.txt` file would look like this:
-
-```
-Brave.exe
-XboxPCApp.exe
-```
-This will ensure that the script doesn't mute Brave.exe and Xbox when the hotkey is pressed.
+2. Then press `ALTGR + ALT + P` and click YES when prompt opens.
 
 ## Running the Script at Startup
 
-You can choose to run the script at startup either automatically or manually.
-
-### Automatic Startup
+### Automatic Startup (Recommended)
 
 1. Run `AutoEnableStartup.bat` located in the script directory. This batch file will automatically move the required files to the Startup folder for you.
 
@@ -104,28 +69,34 @@ Now, the script will run automatically each time you start Windows without the n
 
 2. Type `shell:startup` and press Enter. This will open the Startup folder for the current user.
 
-3. Create a shortcut to the `MuteActiveWindow.ahk` script in this folder. You can do this by right-clicking the script file and selecting "Create shortcut," then move the shortcut to the Startup folder.
+3. Create a shortcut to the `MuteActiveWindow.ahk` script in this folder. You can do this by right-clicking the script file and selecting `"Create shortcut"` and then moving the shortcut to the Startup folder.
 
 Now, the script will run automatically each time you start Windows.
 
-## Updating Your Script and Pairs
+## Updating Your Script
+### Enable auto-updates
 
-Updating your MuteActiveWindow script or custom executable pairs is now even more convenient with the latest v5.0.0 update:
+The script will automatically check for updates on startup by default.
 
-### Automatic Updates
-The script will now automatically check for updates on startup, unless you've explicitly disabled this feature in the `Config/AutoUpdateCheck.txt` file.
+If you wish to disable this behaviour then:
+1. Open `Config/AutoUpdateCheck.txt`.
+2. Change first line from `1` to `0`.
+3. Reload the script to apply changes.
 
-### Manual Updates
-You have two options for manual updates:
+### Manually check for updates
 
-#### Option 1: Right-Click on Taskbar Icon
-1. Right-click on the MuteActiveWindow taskbar icon.
-2. Select "Check for updates" from the menu.
+1. Right click on MuteActiveWindow icon in taskbar
+2. When menu displays click on `Check for updates`
 
-#### Option 2: Download from GitHub
-1. Visit the [MuteActiveWindow GitHub repository](https://github.com/tfurci/MuteActiveWindow).
-2. Navigate to the "Releases" section.
-3. Download the latest version of the script.
+### Enable beta updates
+1. Open `Config/EnableBetaUpdates.txt`.
+2. Change first line from `0` to `1`
+3. Reload the script and if beta update is available prompt to update will be displayed.
+
+## Aditional Keybinds
+
+1. `CTRL + ALT + P` Opens prompt to add current program to exclusions list.
+2. `CTRL + ALT + O` Re-opens script with admin privileges.
 
 ## License
 
@@ -134,4 +105,5 @@ This project is licensed under the [GNU General Public License version 3 (GPL-3.
 ## Acknowledgments
 
 - [AutoHotkey](https://www.autohotkey.com/)
+- [MAW-MUTER](https://github.com/tfurci/maw-muter/)
 - [svcl](https://www.nirsoft.net/utils/sound_volume_command_line.html)

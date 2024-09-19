@@ -1,0 +1,60 @@
+name: Update Version
+
+on:
+  push:
+    branches:
+      - beta
+      - main
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version from AHK script
+        id: extract_version
+        run: |
+          # Extract the version string from the AutoHotkey script
+          VERSION=$(grep -oP 'global ScriptVersion := "\K[^"]+' MuteActiveWindow/MuteActiveWindow.ahk)
+          # Trim leading and trailing whitespace
+          VERSION=$(echo "$VERSION" | xargs)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Check if VERSION file needs updating
+        id: check_version
+        run: |
+          # Read current version from VERSION file
+          if [ -f VERSION ]; then
+            CURRENT_VERSION=$(cat VERSION | xargs)
+          else
+            CURRENT_VERSION=""
+          fi
+          # Compare current version with the extracted version
+          if [ "$CURRENT_VERSION" != "${{ env.VERSION }}" ]; then
+            echo "Version needs to be updated."
+            echo "update=true" >> $GITHUB_ENV
+          else
+            echo "Version is up-to-date."
+            echo "update=false" >> $GITHUB_ENV
+          fi
+
+      - name: Configure Git
+        if: env.update == 'true'
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+
+      - name: Update VERSION file
+        if: env.update == 'true'
+        run: |
+          echo -n "${{ env.VERSION }}" > VERSION
+          git add VERSION
+          git commit -m "Update VERSION file to ${{ env.VERSION }}"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

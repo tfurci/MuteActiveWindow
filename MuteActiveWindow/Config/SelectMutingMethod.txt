@@ -8,3 +8,6 @@ You can check source code in my repo: https://github.com/tfurci/maw-muter
 
 2 = svcl.exe
 (closed source, works great but mutes all active instances which include microphone in some games/apps and can result in mic popping sound)
+
+3 = maw-muter.ahk
+(currently in beta, forked code from VA.ahk and mute_current_application to make a backend muting method for MAW.)
