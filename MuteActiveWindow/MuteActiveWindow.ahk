@@ -9,8 +9,10 @@ ScriptDir := A_ScriptDir
 
 ; Specify the directory for configuration files
 ConfigDir := ScriptDir . "\Config"
+ConfigFile := ConfigDir . "\Settings.ini"
+ExcludedAppsFile := ConfigDir . "\ExcludedApps.txt"
 
-global ScriptVersion := "8.3.2"
+global ScriptVersion := "9.0.0"
 
 ; Define a variable to control debugging messages
 EnableDebug := true ; Set this to false to disable debugging messages
@@ -21,70 +23,80 @@ AddCustomMenus() ; Add custom menu options on script startup
 ; Set the custom tray icon if it exists
 SetCustomIcon()
 
-; Check for auto-updates with AutoUpdateCheck.txt file
-global BetaUpdateEnabled
-CheckBetaUpdates := ConfigDir . "\EnableBetaUpdates.txt"
-FileReadLine, BetaUpdateEnabled, %CheckBetaUpdates%, 1
+; Define default settings
+defaultSettings := {}
+defaultSettings["SelectMutingMethod"] := "1"
+defaultSettings["AutoUpdateCheck"] := "1"
+defaultSettings["EnableBetaUpdates"] := "0"
+defaultSettings["UsePIDForMuting"] := "0"
 
-; Check for beta aut-updates with EnableBetaUpdates.txt file.
-CheckForUpdatesFile := ConfigDir . "\AutoUpdateCheck.txt"
-FileReadLine, AutoUpdateEnabled, %CheckForUpdatesFile%, 1
+; Create the INI file with default values if it doesn't exist or is empty
+if (!FileExist(ConfigFile)) {
+    MsgBox, hello
+    ; Write section with default values
+    for key, value in defaultSettings {
+        IniWrite, %value%, %ConfigFile%, MuteActiveWindow, %key%
+    }
+} else {
+    ; Ensure all settings exist in the INI file
+    for key, value in defaultSettings {
+        MsgBox, %key%
+        IniRead, settingValue, %ConfigFile%, MuteActiveWindow, %key%, ''
+        
+        ; If the setting is empty or doesn't exist, write the default value
+        if (settingValue = "''") {
+            IniWrite, %value%, %ConfigFile%, MuteActiveWindow, %key%
+        }
+    }
+}
+
+; Read settings
+global BetaUpdateEnabled, AutoUpdateEnabled, MutingMethodSelected, PIDMute
+IniRead, BetaUpdateEnabled, %ConfigFile%, MuteActiveWindow, EnableBetaUpdates, % defaultSettings["EnableBetaUpdates"]
+IniRead, AutoUpdateEnabled, %ConfigFile%, MuteActiveWindow, AutoUpdateCheck, % defaultSettings["AutoUpdateCheck"]
+IniRead, MutingMethodSelected, %ConfigFile%, MuteActiveWindow, SelectMutingMethod, % defaultSettings["SelectMutingMethod"]
+IniRead, PIDMute, %ConfigFile%, MuteActiveWindow, UsePIDForMuting, % defaultSettings["UsePIDForMuting"]
 
 if (AutoUpdateEnabled = "1") {
     ; Run auto-update check if enabled
     CheckForUpdates()
 }
 
-; Check the muting method.
-CheckMutingMethod := ConfigDir . "\SelectMutingMethod.txt"
-if (FileExist(CheckMutingMethod)) {
-    FileReadLine, MutingMethodSelected, %CheckMutingMethod%, 1
-
-    if (MutingMethodSelected = "1") {
-        if (FileExist(ScriptDir . "\maw-muter.exe")) {
-            mutingmethod := "maw-muter"
-            RunWait, %ScriptDir%\maw-muter.exe, , Hide
-        } else
-            MsgBox, maw-muter.exe not found in the script directory.
-     } else if (MutingMethodSelected = "2") {
-        if (FileExist(ScriptDir . "\svcl.exe"))
-            mutingmethod := "svcl"
-        else
-            MsgBox, svcl.exe not found in the script directory.
-    } else if (MutingMethodSelected = "3") {
-        ahkmethod := "disabled"
-        ;ahkmethod := "enabled"
-        if (ahkmethod = "enabled") {
-            if (FileExist(ScriptDir . "\maw-muter.ahk")) {
-                mutingmethod := "maw-muter_ahk"
-            } else {
-                MsgBox, maw-muter.ahk not found in the script directory.
-            }
+; Check the muting method
+if (MutingMethodSelected = "2") {
+    if (FileExist(ScriptDir . "\maw-muter.exe")) {
+        mutingmethod := "maw-muter"
+        RunWait, %ScriptDir%\maw-muter.exe, , Hide
+    } else {
+        MsgBox, maw-muter.exe not found in the script directory.
+    }
+} else if (MutingMethodSelected = "3") {
+    if (FileExist(ScriptDir . "\svcl.exe")) {
+        mutingmethod := "svcl"
+    } else {
+        MsgBox, svcl.exe not found in the script directory.
+    }
+} else if (MutingMethodSelected = "1") {
+    ahkmethod := "disabled"
+    ;ahkmethod := "enabled"
+    if (ahkmethod = "enabled") {
+        if (FileExist(ScriptDir . "\maw-muter.ahk")) {
+            mutingmethod := "maw-muter_ahk"
         } else {
-            MsgBox, 4, MAW-MUTER.AHK, maw-muter.ahk method selected but not enabled. Do you want to automatically enable it?
-    
-            ; Check if the user clicked "Yes"
-            IfMsgBox Yes
-            {   
-                OpenConfiguratorMMAHK()
-            }
+            MsgBox, maw-muter.ahk not found in the script directory.
         }
     } else {
-        MsgBox, Invalid selection in SelectMutingMethod.txt: %MutingMethodSelected%
+        MsgBox, 4, MAW-MUTER.AHK, maw-muter.ahk method selected but not enabled. Do you want to automatically enable it?
+
+        ; Check if the user clicked "Yes"
+        IfMsgBox Yes
+        {   
+            OpenConfiguratorMMAHK()
+        }
     }
 } else {
-    MsgBox, File not found: %CheckMutingMethod%
+    MsgBox, "Invalid selection in Settings.ini for Muting Method"
 }
-
-; Function to get the active window's .exe file name
-GetActiveWindowExe() {
-    WinGetActiveTitle, title
-    WinGet, processName, ProcessName, %title%
-    return processName
-}
-
-; Construct the full path to the ExcludedApps.txt file in the Config folder
-ExcludedAppsFile := ConfigDir . "\ExcludedApps.txt"
 
 ; Define a variable to store the hotkey
 Hotkey := ""
@@ -102,46 +114,46 @@ if (A_PriorHotkey = "") {
     }
 }
 
+; Function to get the active window's .exe file name
+GetEXE() {
+    WindowUWP := WinExist("A")
+    ControlGetFocus, FocusedControl, ahk_id %WindowUWP%
+    ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowUWP%
+    WinGet, exename, processname, ahk_id %Hwnd%
+    return exename
+}
+
+GetPID() {
+    WindowUWP := WinExist("A")
+    ControlGetFocus, FocusedControl, ahk_id %WindowUWP%
+    ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowUWP%
+    WinGet, Pid, Pid, ahk_id %Hwnd%
+    return Pid
+}
+
 RunMute:
     ; Check if the hotkey is being pressed
     if (A_ThisHotkey = Hotkey) {
-        ; Get the process name (EXE) of the active window
-        WinGet, processName, ProcessName, A
 
-        ; Check if the active window's process is ApplicationFrameHost.exe
-        if (processName = "ApplicationFrameHost.exe") {
-            WindowUWP := WinExist("A")
-            ControlGetFocus, FocusedControl, ahk_id %WindowUWP%
-            ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowUWP%
-            WinGet, uwpprocess, processname, ahk_id %Hwnd%
-            WinGet, Pid, Pid, ahk_id %Hwnd%
-            if (!IsExcluded(uwpprocess, ExcludedAppsFile)) {
-                if (mutingmethod = "svcl") {
-                    ; Run the svcl.exe command to mute/unmute the active window's .exe
-                    RunWait, %ScriptDir%\svcl.exe /Switch "%uwpprocess%" /Unmute "DefaultCaptureDevice", , Hide
-                } else if (mutingmethod = "maw-muter") {
-                    ; Run the maw-muter.exe command to mute the active window's .exe
-                    RunWait, %ScriptDir%\maw-muter.exe mute "%uwpprocess%", , Hide
-                } else if (mutingmethod = "maw-muter_ahk") {
-                    ; Run the maw-muter.ahk command to mute the active window's .exe
-                    ;MAWAHK(uwpprocess)
-                }
-            }
+        if(PIDMute = "1") {
+            MuteTarget := GetPID()
         } else {
-            ; Get the .exe name of the active window
-            exeName := GetActiveWindowExe()
+            MuteTarget := GetEXE()
+        }
 
-            ; Check if the title or exe is excluded, and skip muting if it is
-            if (!IsExcluded(exeName, ExcludedAppsFile)) {
-                if (mutingmethod = "svcl") {
-                    ; Run the svcl.exe command to mute/unmute the active window's .exe
-                    RunWait, %ScriptDir%\svcl.exe /Switch "%exeName%" /Unmute "DefaultCaptureDevice", , Hide
-                } else if (mutingmethod = "maw-muter") {
-                    ; Run the maw-muter.exe command to mute the active window's .exe
-                    RunWait, %ScriptDir%\maw-muter.exe mute "%exeName%", , Hide
-                } else if (mutingmethod = "maw-muter_ahk") {
-                    ; Run the maw-muter.exe command to mute the active window's .exe
-                    ;MAWAHK(exeName)
+        ; Check if the title or exe is excluded, and skip muting if it is
+        if (!IsExcluded(MuteTarget, ExcludedAppsFile)) {
+            if (mutingmethod = "svcl") {
+                ; Run the svcl.exe command to mute/unmute the active window's .exe
+                RunWait, %ScriptDir%\svcl.exe /Switch "%MuteTarget%" /Unmute "DefaultCaptureDevice", , Hide
+            } else if (mutingmethod = "maw-muter") {
+                ; Run the maw-muter.exe command to mute the active window's .exe
+                RunWait, %ScriptDir%\maw-muter.exe mute "%MuteTarget%", , Hide
+            } else if (mutingmethod = "maw-muter_ahk") {
+                if(PIDMute = "1") {
+                    ;MAWAHKPID(MuteTarget)
+                } else {
+                    ;MAWAHK(MuteTarget)
                 }
             }
         }
