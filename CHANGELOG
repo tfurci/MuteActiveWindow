@@ -1,10 +1,10 @@
+- MAW-MUTER.ahk is now default muting method
+- Settings.ini was added to handle multiple options
+- Mute apps by PID options was added as fix for some apps(has to be manually enabled)
+
+(OLDER RELEASE)
 - Added configurator to change config files easier.
 - Added new muting method maw-muter.ahk (based on my fix for mute_current_application) (needs to be downloaded manually)
 - Fix updatemaw.bat updating if auto-updates are disabled
 - Add CTRL+ALT+O to rerun script as administrator
 - Implement UseHook to get keybind in some games.
-
-(OLDER RELEASE)
-- Move updater to .ahk script directly(1 .bat updater still exists)
-- Unnecessary files get removed with updates now.
-- maw-muter starts on script startup now to reduce first mute delay.
