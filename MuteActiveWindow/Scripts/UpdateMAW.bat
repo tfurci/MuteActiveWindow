@@ -84,9 +84,11 @@ set "replace4=ahkmethod"
 set "configFile=%RootDir%\Config\Settings.ini"
 set "mutingMethod="
 :: Read the SelectMutingMethod value from the INI file
-for /f "tokens=1,2 delims==" %%A in ('findstr /i "^SelectMutingMethod=" "%configFile%"') do (
+powershell -Command "$content = Get-Content '%configFile%' -Raw; $content | Out-File -Encoding utf8 '%configFile%.tmp'"
+for /f "tokens=1,2 delims==" %%A in ('findstr /i "^SelectMutingMethod=" "%configFile%.tmp"') do (
     set "mutingMethod=%%B"
 )
+del "%configFile%.tmp"
 if "%mutingMethod%" == "1" (
     powershell -Command "& {(Get-Content '%filename1%' -Raw) -replace [regex]::Escape('%search1%'), '%replace1%' -replace [regex]::Escape('%search2%'), '%replace2%' -replace [regex]::Escape('%search3%'), '%replace3%' -replace [regex]::Escape('%search4%'), '%replace4%' | Set-Content '%filename1%'}"
     echo maw-muter.ahk muting method re-enabled
