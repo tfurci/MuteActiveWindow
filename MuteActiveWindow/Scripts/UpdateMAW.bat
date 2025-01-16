@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 set "currentDir=%~dp0"
 set "rootDir=%currentDir%.."
 set "betaFlag=%~1"
-echo Starting MAW Updater (160125.01)
+echo Starting MAW Updater (160125.02)
 echo.
 
 :: Define GitHub URLs
@@ -73,10 +73,10 @@ call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfurci
 
 ::Re-Enable maw-muter.ahk if it was enabled in the first place
 set "filename1=%rootDir%\MuteActiveWindow.ahk"
-set "search1=;MAWAHK(MuteTarget)"
-set "replace1=MAWAHK(MuteTarget)"
-set "search2=;MAWAHKPID(MuteTarget)"
-set "replace2=MAWAHKPID(MuteTarget)"
+set "search1=;MAWAHK"
+set "replace1=MAWAHK"
+set "search2=;MAWAHKPID"
+set "replace2=MAWAHKPID"
 set "search3=;#Include"
 set "replace3=#Include"
 set "search4=;ahkmethod"

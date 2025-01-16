@@ -29,6 +29,7 @@ defaultSettings["SelectMutingMethod"] := "1"
 defaultSettings["AutoUpdateCheck"] := "1"
 defaultSettings["EnableBetaUpdates"] := "0"
 defaultSettings["UsePIDForMuting"] := "0"
+defaultSettings["EnableDebugMode"] := "0"
 
 ; Create the INI file with default values if it doesn't exist or is empty
 if (!FileExist(ConfigFile)) {
@@ -49,11 +50,12 @@ if (!FileExist(ConfigFile)) {
 }
 
 ; Read settings
-global BetaUpdateEnabled, AutoUpdateEnabled, MutingMethodSelected, PIDMute
+global BetaUpdateEnabled, AutoUpdateEnabled, MutingMethodSelected, PIDMute, EnableDebug
 IniRead, BetaUpdateEnabled, %ConfigFile%, MuteActiveWindow, EnableBetaUpdates, % defaultSettings["EnableBetaUpdates"]
 IniRead, AutoUpdateEnabled, %ConfigFile%, MuteActiveWindow, AutoUpdateCheck, % defaultSettings["AutoUpdateCheck"]
 IniRead, MutingMethodSelected, %ConfigFile%, MuteActiveWindow, SelectMutingMethod, % defaultSettings["SelectMutingMethod"]
 IniRead, PIDMute, %ConfigFile%, MuteActiveWindow, UsePIDForMuting, % defaultSettings["UsePIDForMuting"]
+IniRead, EnableDebug, %ConfigFile%, MuteActiveWindow, EnableDebugMode, % defaultSettings["EnableDebugMode"]
 
 if (AutoUpdateEnabled = "1") {
     ; Run auto-update check if enabled
@@ -118,6 +120,8 @@ GetEXE() {
     ControlGetFocus, FocusedControl, ahk_id %WindowUWP%
     ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowUWP%
     WinGet, exename, processname, ahk_id %Hwnd%
+    if (EnableDebug)
+        MsgBox, GetEXE processname: %exename%
     return exename
 }
 
@@ -126,7 +130,10 @@ GetPID() {
     ControlGetFocus, FocusedControl, ahk_id %WindowUWP%
     ControlGet, Hwnd, Hwnd,, %FocusedControl%, ahk_id %WindowUWP%
     WinGet, Pid, Pid, ahk_id %Hwnd%
-    return Pid
+    WinGet, exename, processname, ahk_id %Hwnd%
+    if (EnableDebug)
+        MsgBox, GetPID - PID: %Pid%`nExecutable: %exename%
+    return { pid: Pid, exename: exename } ; Return an object with both values
 }
 
 RunMute:
@@ -134,24 +141,38 @@ RunMute:
     if (A_ThisHotkey = Hotkey) {
 
         if(PIDMute = "1") {
-            MuteTarget := GetPID()
+            if (EnableDebug)
+                MsgBox, MuteTarget using PID
+            processInfo := GetPID()
+            pid := processInfo.pid
+            exename := processInfo.exename
         } else {
-            MuteTarget := GetEXE()
+            if (EnableDebug)
+                MsgBox, MuteTarget using process name
+            exename := GetEXE()
         }
 
         ; Check if the title or exe is excluded, and skip muting if it is
-        if (!IsExcluded(MuteTarget, ExcludedAppsFile)) {
+        if (!IsExcluded(exename, ExcludedAppsFile)) {
             if (mutingmethod = "svcl") {
                 ; Run the svcl.exe command to mute/unmute the active window's .exe
-                RunWait, %ScriptDir%\svcl.exe /Switch "%MuteTarget%" /Unmute "DefaultCaptureDevice", , Hide
+                if (EnableDebug)
+                    MsgBox, SVCL.exe %exename%
+                RunWait, %ScriptDir%\svcl.exe /Switch "%exename%" /Unmute "DefaultCaptureDevice", , Hide
             } else if (mutingmethod = "maw-muter") {
                 ; Run the maw-muter.exe command to mute the active window's .exe
-                RunWait, %ScriptDir%\maw-muter.exe mute "%MuteTarget%", , Hide
+                if (EnableDebug)
+                    MsgBox, MAW-MUTER.exe %exename%
+                RunWait, %ScriptDir%\maw-muter.exe mute "%exename%", , Hide
             } else if (mutingmethod = "maw-muter_ahk") {
                 if(PIDMute = "1") {
-                    ;MAWAHKPID(MuteTarget)
+                    if (EnableDebug)
+                        MsgBox, MAWAHKPID %pid%
+                    ;MAWAHKPID(pid)
                 } else {
-                    ;MAWAHK(MuteTarget)
+                    if (EnableDebug)
+                        MsgBox, MAWAHK %pid%
+                    ;MAWAHK(exename)
                 }
             }
         }
@@ -171,6 +192,8 @@ IsExcluded(name, exclusionFile) {
         excludedName := Trim(excludedList[A_Index])
         
         if (name = excludedName) {
+            if (EnableDebug)
+                MsgBox, Process %name% is excluded
             return true
         }
     }
