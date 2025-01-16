@@ -163,9 +163,11 @@ if not exist "%configFile%" (
 
 rem Read the value of SelectMutingMethod from Settings.ini
 set "mutingMethod="
-for /f "tokens=1,2 delims==" %%A in ('findstr /i "^SelectMutingMethod=" "%configFile%"') do (
+powershell -Command "$content = Get-Content '%configFile%' -Raw; $content | Out-File -Encoding utf8 '%configFile%.tmp'"
+for /f "tokens=1,2 delims==" %%A in ('findstr /i "^SelectMutingMethod=" "%configFile%.tmp"') do (
     set "mutingMethod=%%B"
 )
+del "%configFile%.tmp"
 
 rem Check if the muting method is set to 1
 if "%mutingMethod%" neq "1" (
@@ -201,9 +203,11 @@ rem Initialize the current method variable
 set "currentMethod="
 
 rem Read the SelectMutingMethod value from Settings.ini
-for /f "tokens=1,2 delims==" %%A in ('findstr /i "^SelectMutingMethod=" "%configFile%"') do (
+powershell -Command "$content = Get-Content '%configFile%' -Raw; $content | Out-File -Encoding utf8 '%configFile%.tmp'"
+for /f "tokens=1,2 delims==" %%A in ('findstr /i "^SelectMutingMethod=" "%configFile%.tmp"') do (
     set "currentMethod=%%B"
 )
+del "%configFile%.tmp"
 
 rem Set current method name based on the value
 set "currentMethodName="
@@ -293,9 +297,11 @@ echo.
 
 rem Get the current status of Beta Updates from Settings.ini
 set "betaStatus="
-for /f "tokens=1,2 delims==" %%A in ('findstr /i "^EnableBetaUpdates=" "%configFile%"') do (
+powershell -Command "$content = Get-Content '%configFile%' -Raw; $content | Out-File -Encoding utf8 '%configFile%.tmp'"
+for /f "tokens=1,2 delims==" %%A in ('findstr /i "^EnableBetaUpdates=" "%configFile%.tmp"') do (
     set "betaStatus=%%B"
 )
+del "%configFile%.tmp"
 
 set "betaStatusName="
 if "%betaStatus%"=="1" (
