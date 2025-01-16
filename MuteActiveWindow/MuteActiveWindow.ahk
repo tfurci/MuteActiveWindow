@@ -40,7 +40,6 @@ if (!FileExist(ConfigFile)) {
 } else {
     ; Ensure all settings exist in the INI file
     for key, value in defaultSettings {
-        MsgBox, %key%
         IniRead, settingValue, %ConfigFile%, MuteActiveWindow, %key%, ''
         
         ; If the setting is empty or doesn't exist, write the default value

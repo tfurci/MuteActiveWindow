@@ -3,3 +3,4 @@
 **/*.rar
 CompressIntoRar.bat
 **/maw-muter.ahk
+MuteActiveWindow/Config/Settings.ini

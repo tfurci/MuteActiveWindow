@@ -6,6 +6,7 @@ set "configFolder=%scriptFolder%Config"
 
 set "mawMuterPath=%scriptFolder%\maw-muter.exe"
 set "mawmuterahkPath=%scriptFolder%\maw-muter.ahk"
+set "scriptFile=%scriptFolder%\MuteActiveWindow.ahk"
 
 where powershell >nul 2>&1
 if %errorlevel% neq 0 (
@@ -18,8 +19,33 @@ if %errorlevel% neq 0 (
 set "argumentFlag=%~1"
 if /i "%argumentFlag%"=="-3" (
     goto runmawmuterahkenabler
-) else (
-    echo Command line argument is not valid.
+)
+
+
+rem Check if Configurator is compatible with script version
+if not exist "%scriptFile%" (
+    echo MuteActiveWindow.ahk not found.
+    pause
+    exit /b
+)
+
+rem Check if Configurator is compatible with script version
+if not exist "%scriptFile%" (
+    echo MuteActiveWindow.ahk not found.
+    pause
+    exit /b
+)
+
+rem Initialize flag to check if ScriptVersion was found
+set "scriptVersionLine="
+rem Read the MuteActiveWindow.ahk file line by line to find ScriptVersion
+for /f "tokens=*" %%A in (%scriptFile%) do (
+    rem Use findstr with /B to search for the line containing "ScriptVersion := " at the start
+    echo %%A | findstr /i /b "global ScriptVersion" >nul
+    if not errorlevel 1 (
+        set "scriptVersionLine=%%A"
+        goto :foundScriptVersion
+    )
 )
 
 :menu
@@ -105,35 +131,45 @@ echo ========================
 
 set "filename1=%scriptFolder%MuteActiveWindow.ahk"
 set "outfile=%scriptFolder%tempFile.ahk"
-set "search1=;MAWAHK(exeName)"
-set "replace1=MAWAHK(exeName)"
-set "search2=;MAWAHK(uwpprocess)"
-set "replace2=MAWAHK(uwpprocess)"
+set "search1=;MAWAHK(MuteTarget)"
+set "replace1=MAWAHK(MuteTarget)"
+set "search2=;MAWAHKPID(MuteTarget)"
+set "replace2=MAWAHKPID(MuteTarget)"
 set "search3=;#Include"
 set "replace3=#Include"
 set "search4=;ahkmethod"
 set "replace4=ahkmethod"
 
 rem Check if maw-muter.ahk exists in the script folder
-if not exist "%scriptFolder%maw-muter.ahk" (
+if not exist "%scriptFolder%\maw-muter.ahk" (
     echo maw-muter.ahk not found in the script folder.
+    choice /C YN /M "Do you want to download it: "
+    if not errorlevel 2 (
+        call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfurci/maw-muter/main/maw-muter_AHK/maw-muter.ahk"  
+    )
+    if errorlevel 2 (
+        pause
+        goto menu
+    )
+)
+
+set "configFile=%configFolder%\Settings.ini"
+rem Check if Settings.ini exists
+if not exist "%configFile%" (
+    echo Settings.ini not found in the config folder.
     pause
     goto menu
 )
 
-rem Read the first line of SelectMutingMethod.txt in the config folder
-set "MuteconfigFile=%configFolder%\SelectMutingMethod.txt"
-if not exist "%MuteconfigFile%" (
-    echo SelectMutingMethod.txt not found in the config folder.
-    pause
-    goto menu
+rem Read the value of SelectMutingMethod from Settings.ini
+set "mutingMethod="
+for /f "tokens=1,2 delims==" %%A in ('findstr /i "^SelectMutingMethod=" "%configFile%"') do (
+    set "mutingMethod=%%B"
 )
 
-set /p mutingMethod=<"%MuteconfigFile%"
-
-rem Check if the muting method is set to 3 (assuming it's a numeric value)
-if "%mutingMethod%" neq "3" (
-    echo Muting method is not set to 3 in SelectMutingMethod.txt.
+rem Check if the muting method is set to 1
+if "%mutingMethod%" neq "1" (
+    echo Muting method is not set to 1 in Settings.ini.
     pause
     goto menu
 )
@@ -153,17 +189,29 @@ if /i "%argumentFlag%"=="-3" (
 :runmutingmethodchanger
 
 cls
-rem Set the path for the MutingConfigFile
-set "MutingConfigFile=%configFolder%\SelectMutingMethod.txt"
+rem Set the path for the Settings.ini file
+set "configFile=%configFolder%\Settings.ini"
+if not exist "%configFile%" (
+    echo Settings.ini not found in the config folder.
+    pause
+    goto menu
+)
 
-rem Get the current method number from the text file
-set /P currentMethod=<"%MutingConfigFile%"
+rem Initialize the current method variable
+set "currentMethod="
+
+rem Read the SelectMutingMethod value from Settings.ini
+for /f "tokens=1,2 delims==" %%A in ('findstr /i "^SelectMutingMethod=" "%configFile%"') do (
+    set "currentMethod=%%B"
+)
+
+rem Set current method name based on the value
 set "currentMethodName="
-if "%currentMethod%"=="2" (
+if "%currentMethod%"=="3" (
     set "currentMethodName=svcl.exe"
-) else if "%currentMethod%"=="1" (
+) else if "%currentMethod%"=="2" (
     set "currentMethodName=maw-muter.exe"
-) else if "%currentMethod%"=="3" (
+) else if "%currentMethod%"=="1" (
     set "currentMethodName=maw-muter.ahk"
 )
 
@@ -174,9 +222,9 @@ echo.
 echo Currently selected method: %currentMethodName%
 echo.
 echo Select Muting Method:
-echo 1. maw-muter.ahk (newest, based of VA.ahk & mute_current_application's fix made by tfurci, fastest, built into .ahk)
-echo 2. maw-muter.exe (default, open source, works for most apps)
-echo 3. svcl.exe (Will open browser and automaticall donwload .zip file then just extract it to script's root folder)
+echo 1. maw-muter.ahk (newest, based on VA.ahk & mute_current_application's fix made by tfurci, fastest, built into .ahk)
+echo 2. maw-muter.exe (previously default, open source, works for most apps)
+echo 3. svcl.exe (Will open browser and automatically download .zip file, then extract it to script's root folder)
 echo.
 echo 4. Return to Menu
 echo.
@@ -186,13 +234,13 @@ set /p choice="Enter your choice (1-4): "
 
 rem Validate the user input and set the selectedMethod variable accordingly
 if "%choice%"=="1" (
-    set "selectedMethod=3"
+    set "selectedMethod=1"
     call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfurci/maw-muter/main/maw-muter_AHK/maw-muter.ahk"
 ) else if "%choice%"=="2" (
-    set "selectedMethod=1"
+    set "selectedMethod=2"
     call :updateScript "%mawMuterPath%" "https://github.com/tfurci/maw-muter/releases/latest/download/maw-muter.exe"
 ) else if "%choice%"=="3" (
-    set "selectedMethod=2"
+    set "selectedMethod=3"
     explorer "https://www.nirsoft.net/utils/svcl-x64.zip"
     pause
 ) else if "%choice%"=="4" (
@@ -204,10 +252,10 @@ if "%choice%"=="1" (
     goto menu
 )
 
-rem Use PowerShell to replace the content of the first line in the text file
-powershell -Command "(Get-Content '%MutingConfigFile%') | ForEach-Object { if ($_.ReadCount -eq 1) { '%selectedMethod%' } else { $_ } } | Set-Content '%MutingConfigFile%'"
+rem Use PowerShell to replace the content of the first line in the INI file
+powershell -Command "(Get-Content '%configFile%') | ForEach-Object { if ($_ -match '^SelectMutingMethod=') { 'SelectMutingMethod=%selectedMethod%' } else { $_ } } | Set-Content '%configFile%'"
 
-echo Muting method sucesfully changed.
+echo Muting method successfully changed.
 if "%choice%"=="1" (
     goto runmawmuterahkenabler
 )
@@ -226,7 +274,13 @@ pause
 goto menu
 
 :enabledisablebetaupdates
-set "BetaConfigFile=%configFolder%\EnableBetaUpdates.txt"
+
+set "configFile=%configFolder%\Settings.ini"
+if not exist "%configFile%" (
+    echo Settings.ini not found in the config folder.
+    pause
+    goto menu
+)
 cls
 echo ========================
 echo  Enable/Disable beta updates
@@ -237,8 +291,12 @@ echo 1. Enable BETA updates
 echo 2. Disable BETA updates
 echo.
 
-rem Display if beta updates are enabled
-set /P betaStatus=<"%BetaConfigFile%"
+rem Get the current status of Beta Updates from Settings.ini
+set "betaStatus="
+for /f "tokens=1,2 delims==" %%A in ('findstr /i "^EnableBetaUpdates=" "%configFile%"') do (
+    set "betaStatus=%%B"
+)
+
 set "betaStatusName="
 if "%betaStatus%"=="1" (
     set "betaStatusName=Enabled"
@@ -254,25 +312,25 @@ echo.
 rem Prompt the user for their choice
 set /p choice="Enter your choice (1-2): "
 
-
-rem Validate the user input and set the selectedMethod variable accordingly
+rem Validate the user input and set the selectedBetaChoice variable accordingly
 if "%choice%"=="1" (
-    set "betachoice=1"
+    set "selectedBetaChoice=1"
 ) else if "%choice%"=="2" (
-    set "betachoice=0"
+    set "selectedBetaChoice=0"
 ) else (
     echo Invalid choice
     exit /b 1
 )
 
-rem Use PowerShell to replace the content of the first line in the text file
-powershell -Command "(Get-Content '%BetaConfigFile%') | ForEach-Object { if ($_.ReadCount -eq 1) { '%betachoice%' } else { $_ } } | Set-Content '%BetaConfigFile%'"
+rem Use PowerShell to replace the content of the EnableBetaUpdates line in Settings.ini
+powershell -Command "(Get-Content '%configFile%') | ForEach-Object { if ($_ -match '^EnableBetaUpdates=') { 'EnableBetaUpdates=%selectedBetaChoice%' } else { $_ } } | Set-Content '%configFile%'"
 
 if "%choice%"=="1" (
     echo Beta updates enabled!
 ) else if "%choice%"=="2" (
     echo Beta updates disabled!
 )
+
 start "" "%scriptFolder%\MuteActiveWindow.ahk"
 pause
 goto menu
@@ -292,3 +350,29 @@ if errorlevel 1 (
     echo %~nx1 is already up to date.
 )
 goto :eof
+
+
+:foundScriptVersion
+rem Check if we found the ScriptVersion line
+if "%scriptVersionLine%"=="" (
+    echo ScriptVersion not found in MuteActiveWindow.ahk.
+    pause
+    exit /b
+)
+for /f "tokens=4 delims=: " %%B in ("%scriptVersionLine%") do (
+    set tempVersion=%%B
+)
+for /f "tokens=* delims= " %%C in ("%tempVersion%") do (
+    set tempVersion=%%C
+)
+set tempVersion=%tempVersion:"=%
+for /f "tokens=1 delims=." %%D in ("%tempVersion%") do (
+    set majorVersion=%%D
+)
+if %majorVersion% lss 9 (
+    echo The Configurator is only compatible with MuteActiveWindow version 9.0.0+. Please update MAW manually.
+    choice /C YN /M "Do you want to open GitHub repository for manual update?"
+    if not errorlevel 2 start https://github.com/tfurci/muteactivewindow
+    exit
+)
+goto :menu
