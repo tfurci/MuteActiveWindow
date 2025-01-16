@@ -32,7 +32,6 @@ defaultSettings["UsePIDForMuting"] := "0"
 
 ; Create the INI file with default values if it doesn't exist or is empty
 if (!FileExist(ConfigFile)) {
-    MsgBox, hello
     ; Write section with default values
     for key, value in defaultSettings {
         IniWrite, %value%, %ConfigFile%, MuteActiveWindow, %key%
