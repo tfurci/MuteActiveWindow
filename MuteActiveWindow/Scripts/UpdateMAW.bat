@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 set "currentDir=%~dp0"
 set "rootDir=%currentDir%.."
 set "betaFlag=%~1"
-echo Starting MAW Updater (060224.01)
+echo Starting MAW Updater (160125.02)
 echo.
 
 :: Define GitHub URLs
@@ -43,7 +43,7 @@ if %errorlevel% neq 0 (
 
 
 :: List of unnecessary files to be deleted
-set "filesToDelete=Scripts\BatUpdater.bat"
+set "filesToDelete=Scripts\BatUpdater.bat, Config\AutoUpdateCheck.txt, Config\EnableBetaUpdates.txt, Config\SelectMutingMethod.txt"
 
 set /a deletedFilesCount=0
 echo Deleting unnecessary files...
@@ -73,17 +73,23 @@ call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfurci
 
 ::Re-Enable maw-muter.ahk if it was enabled in the first place
 set "filename1=%rootDir%\MuteActiveWindow.ahk"
-set "search1=;MAWAHK(exeName)"
-set "replace1=MAWAHK(exeName)"
-set "search2=;MAWAHK(uwpprocess)"
-set "replace2=MAWAHK(uwpprocess)"
+set "search1=;MAWAHK"
+set "replace1=MAWAHK"
+set "search2=;MAWAHKPID"
+set "replace2=MAWAHKPID"
 set "search3=;#Include"
 set "replace3=#Include"
 set "search4=;ahkmethod"
 set "replace4=ahkmethod"
-set "MuteconfigFile=%RootDir%\Config\SelectMutingMethod.txt"
-set /p mutingMethod=<"%MuteconfigFile%"
-if "%mutingMethod%" == "3" (
+set "configFile=%RootDir%\Config\Settings.ini"
+set "mutingMethod="
+:: Read the SelectMutingMethod value from the INI file
+powershell -Command "$content = Get-Content '%configFile%' -Raw; $content | Out-File -Encoding utf8 '%configFile%.tmp'"
+for /f "tokens=1,2 delims==" %%A in ('findstr /i "^SelectMutingMethod=" "%configFile%.tmp"') do (
+    set "mutingMethod=%%B"
+)
+del "%configFile%.tmp"
+if "%mutingMethod%" == "1" (
     powershell -Command "& {(Get-Content '%filename1%' -Raw) -replace [regex]::Escape('%search1%'), '%replace1%' -replace [regex]::Escape('%search2%'), '%replace2%' -replace [regex]::Escape('%search3%'), '%replace3%' -replace [regex]::Escape('%search4%'), '%replace4%' | Set-Content '%filename1%'}"
     echo maw-muter.ahk muting method re-enabled
     echo.
