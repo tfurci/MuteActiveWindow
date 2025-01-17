@@ -1,5 +1,0 @@
-1
-
-;Change in first line
-;1=ENABLE auto update check on startup
-;0=DISABLE
