@@ -12,7 +12,7 @@ ConfigDir := ScriptDir . "\Config"
 ConfigFile := ConfigDir . "\Settings.ini"
 ExcludedAppsFile := ConfigDir . "\ExcludedApps.txt"
 
-global ScriptVersion := "9.0.0"
+global ScriptVersion := "9.1.0"
 
 ; Add custom menu items to the tray menu
 AddCustomMenus() ; Add custom menu options on script startup
@@ -247,6 +247,7 @@ CheckForUpdatesFromMenu() {
 }
 
 CheckForUpdates(isFromMenu := false) {
+    global UpdateScriptBat, UpdateScriptBetaURL, UpdateScriptStableURL
     ; Define the URL of your raw VERSION text file on GitHub
     GitHubStableVersionURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/VERSION"
     GitHubBetaVersionURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/VERSION"
@@ -343,7 +344,39 @@ CheckForUpdates(isFromMenu := false) {
             }
         } else if (isFromMenu) {
             ; Display a message if called from the menu and versions are the same
-            MsgBox, Your script is already up-to-date.`n`nLatest available version:  v%LatestVersion%`nYour current version:  v%ScriptVersion%`n`nChangelog:`n%Changelog%
+            GuiCurrentVersion := "Current Version: v" ScriptVersion "`nLatest Version: v" LatestVersion
+            Gui, +AlwaysOnTop +Resize
+            Gui, Add, Text, w500 h30 Center, %GuiCurrentVersion%
+            Gui, Add, Text, w500 h150 Center, %Changelog%
+            Gui, Add, Button, x200 w150 Center gForceUpdate, Force Update
+            Gui, Add, Button, x200 w150 Center gCancelUpdate, Cancel
+            Gui, Show,, Update Checker
+            Return
+    
+            ForceUpdate:
+                Gui, Destroy
+                Gui, +AlwaysOnTop +Resize
+                Gui, Add, Text,, Select Branch for Force Update:
+                Gui, Add, Button, gForceStableUpdate, Stable Branch
+                Gui, Add, Button, gForceBetaUpdate, Beta Branch
+                Gui, Show,, Force Update
+                Return
+    
+            ForceStableUpdate:
+                URLDownloadToFile, %UpdateScriptStableURL%, %UpdateScriptBat%
+                Run, %UpdateScriptBat%
+                Gui, Destroy
+                Return
+    
+            ForceBetaUpdate:
+                URLDownloadToFile, %UpdateScriptBetaURL%, %UpdateScriptBat%
+                Run, %UpdateScriptBat% -beta
+                Gui, Destroy
+                Return
+    
+            CancelUpdate:
+                Gui, Destroy
+                Return
         }
     }
     else {
