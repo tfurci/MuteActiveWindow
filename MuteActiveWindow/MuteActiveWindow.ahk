@@ -14,9 +14,6 @@ ExcludedAppsFile := ConfigDir . "\ExcludedApps.txt"
 
 global ScriptVersion := "9.0.0"
 
-; Define a variable to control debugging messages
-EnableDebug := true ; Set this to false to disable debugging messages
-
 ; Add custom menu items to the tray menu
 AddCustomMenus() ; Add custom menu options on script startup
 
