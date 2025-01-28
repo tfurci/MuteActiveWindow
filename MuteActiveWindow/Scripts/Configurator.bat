@@ -12,7 +12,7 @@ where powershell >nul 2>&1
 if %errorlevel% neq 0 (
     echo Configurator cannot be run because PowerShell is not installed.
     choice /C YN /M "Do you want to open GitHub repository for manual update? [Y/N]: "
-    if not errorlevel 2 start https://github.com/tfurci/muteactivewindow
+    if not errorlevel 2 start https://github.com/tfourj/muteactivewindow
     exit
 )
 
@@ -145,7 +145,7 @@ if not exist "%scriptFolder%\maw-muter.ahk" (
     echo maw-muter.ahk not found in the script folder.
     choice /C YN /M "Do you want to download it: "
     if not errorlevel 2 (
-        call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfurci/maw-muter/main/maw-muter_AHK/maw-muter.ahk"  
+        call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfourj/maw-muter/main/maw-muter_AHK/maw-muter.ahk"  
     )
     if errorlevel 2 (
         pause
@@ -226,7 +226,7 @@ echo.
 echo Currently selected method: %currentMethodName%
 echo.
 echo Select Muting Method:
-echo 1. maw-muter.ahk (newest, based on VA.ahk & mute_current_application's fix made by tfurci, fastest, built into .ahk)
+echo 1. maw-muter.ahk (newest, based on VA.ahk & mute_current_application's fix made by tfourj, fastest, built into .ahk)
 echo 2. maw-muter.exe (previously default, open source, works for most apps)
 echo 3. svcl.exe (Will open browser and automatically download .zip file, then extract it to script's root folder)
 echo.
@@ -239,10 +239,10 @@ set /p choice="Enter your choice (1-4): "
 rem Validate the user input and set the selectedMethod variable accordingly
 if "%choice%"=="1" (
     set "selectedMethod=1"
-    call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfurci/maw-muter/main/maw-muter_AHK/maw-muter.ahk"
+    call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfourj/maw-muter/main/maw-muter_AHK/maw-muter.ahk"
 ) else if "%choice%"=="2" (
     set "selectedMethod=2"
-    call :updateScript "%mawMuterPath%" "https://github.com/tfurci/maw-muter/releases/latest/download/maw-muter.exe"
+    call :updateScript "%mawMuterPath%" "https://github.com/tfourj/maw-muter/releases/latest/download/maw-muter.exe"
 ) else if "%choice%"=="3" (
     set "selectedMethod=3"
     explorer "https://www.nirsoft.net/utils/svcl-x64.zip"
@@ -378,7 +378,7 @@ for /f "tokens=1 delims=." %%D in ("%tempVersion%") do (
 if %majorVersion% lss 9 (
     echo The Configurator is only compatible with MuteActiveWindow version 9.0.0+. Please update MAW manually.
     choice /C YN /M "Do you want to open GitHub repository for manual update?"
-    if not errorlevel 2 start https://github.com/tfurci/muteactivewindow
+    if not errorlevel 2 start https://github.com/tfourj/muteactivewindow
     exit
 )
 goto :menu

@@ -249,16 +249,16 @@ CheckForUpdatesFromMenu() {
 CheckForUpdates(isFromMenu := false) {
     global UpdateScriptBat, UpdateScriptBetaURL, UpdateScriptStableURL
     ; Define the URL of your raw VERSION text file on GitHub
-    GitHubStableVersionURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/VERSION"
-    GitHubBetaVersionURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/VERSION"
+    GitHubStableVersionURL := "https://raw.githubusercontent.com/tfourj/MuteActiveWindow/main/VERSION"
+    GitHubBetaVersionURL := "https://raw.githubusercontent.com/tfourj/MuteActiveWindow/beta/VERSION"
 
     ; Define the URL of your raw CHANGELOG text file on GitHub
-    GitHubStableChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/CHANGELOG"
-    GitHubBetaChangelogURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/CHANGELOG"
+    GitHubStableChangelogURL := "https://raw.githubusercontent.com/tfourj/MuteActiveWindow/main/CHANGELOG"
+    GitHubBetaChangelogURL := "https://raw.githubusercontent.com/tfourj/MuteActiveWindow/beta/CHANGELOG"
 
     ; Define the URL of Updater
-    UpdateScriptStableURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/main/MuteActiveWindow/Scripts/UpdateMAW.bat"
-    UpdateScriptBetaURL := "https://raw.githubusercontent.com/tfurci/MuteActiveWindow/beta/MuteActiveWindow/Scripts/UpdateMAW.bat"
+    UpdateScriptStableURL := "https://raw.githubusercontent.com/tfourj/MuteActiveWindow/main/MuteActiveWindow/Scripts/UpdateMAW.bat"
+    UpdateScriptBetaURL := "https://raw.githubusercontent.com/tfourj/MuteActiveWindow/beta/MuteActiveWindow/Scripts/UpdateMAW.bat"
 
     ; Determine the URL to use based on BetaUpdateEnabled flag
     if (BetaUpdateEnabled = 1) {
@@ -327,7 +327,7 @@ CheckForUpdates(isFromMenu := false) {
                 MsgBox, 4, Update Available, A new version v%LatestVersion% (Current version: v%ScriptVersion%) is available on GitHub.`n`nAs this is a major version update, you need to download it from GitHub's releases.`n`nChangelog:`n%Changelog%`n`nWould you like to download it?
                 IfMsgBox Yes
                 {
-                    Run, https://github.com/tfurci/MuteActiveWindow/releases
+                    Run, https://github.com/tfourj/MuteActiveWindow/releases
                 }
             } else {
                 ; Prompt the user to run the local UpdateScript.bat

@@ -8,7 +8,7 @@ echo Starting MAW Updater (160125.02)
 echo.
 
 :: Define GitHub URLs
-set "githubRootURL=https://raw.githubusercontent.com/tfurci/MuteActiveWindow"
+set "githubRootURL=https://raw.githubusercontent.com/tfourj/MuteActiveWindow"
 :: Check if the beta flag is used and set the GitHub branch accordingly
 if /i "%betaFlag%"=="-beta" (
     set "githubBranch=/beta"
@@ -28,7 +28,7 @@ set "mawmuterahkPath=%rootDir%\maw-muter.ahk"
 where curl >nul 2>&1 || (
     echo Auto-update cannot be performed because curl is not installed.
     choice /C YN /M "Do you want to open GitHub repository for manual update? [Y/N]: "
-    if not errorlevel 2 start https://github.com/tfurci/muteactivewindow
+    if not errorlevel 2 start https://github.com/tfourj/muteactivewindow
     exit
 )
 
@@ -37,7 +37,7 @@ where powershell >nul 2>&1
 if %errorlevel% neq 0 (
     echo PowerShell is not installed.
     choice /C YN /M "Do you want to open GitHub repository for manual update? [Y/N]: "
-    if not errorlevel 2 start https://github.com/tfurci/muteactivewindow
+    if not errorlevel 2 start https://github.com/tfourj/muteactivewindow
     exit
 )
 
@@ -65,11 +65,11 @@ call :forceUpdateScript "%aesScriptPath%" "%githubRootURL%%githubBranch%/MuteAct
 echo.
 call :forceUpdateScript "%mainScriptPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/MuteActiveWindow.ahk"
 echo.
-call :updateScript "%mawMuterPath%" "https://github.com/tfurci/maw-muter/releases/latest/download/maw-muter.exe"
+call :updateScript "%mawMuterPath%" "https://github.com/tfourj/maw-muter/releases/latest/download/maw-muter.exe"
 echo.
 call :forceUpdateScript "%ConfiguratorPath%" "%githubRootURL%%githubBranch%/MuteActiveWindow/Scripts/Configurator.bat"
 echo.
-call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfurci/maw-muter/main/maw-muter_AHK/maw-muter.ahk"
+call :updateScript "%mawmuterahkPath%" "https://raw.githubusercontent.com/tfourj/maw-muter/main/maw-muter_AHK/maw-muter.ahk"
 
 ::Re-Enable maw-muter.ahk if it was enabled in the first place
 set "filename1=%rootDir%\MuteActiveWindow.ahk"
